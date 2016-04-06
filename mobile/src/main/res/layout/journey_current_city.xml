@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:padding="6dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:divider="@drawable/linear_divider"
+        android:showDividers="middle"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="当前城市：西安"
+                android:id="@+id/textView12" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="(陕西省西安市火车站)"
+                android:id="@+id/textView13"
+                android:ellipsize="start"
+                android:gravity="center|right" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+            <!-- 用定制的CubeImageView -->
+            <in.srain.cube.image.CubeImageView
+                android:id="@+id/thumb_city_brief"
+                android:layout_width="120dp"
+                android:layout_height="90dp"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                android:src="@mipmap/loading" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/city_brief_example"
+                android:id="@+id/textView14"
+                android:elegantTextHeight="false"
+                android:ellipsize="end"
+                android:padding="3dp"
+                android:scrollbars="vertical"
+                android:layout_gravity="center"
+                android:maxLines="5" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2c8cd1</color>
+    <color name="colorPrimaryDark">#f6f6f6</color>
+    <color name="colorAccent">#73c6e7</color>
+    <color name="tabChecked">#0199f9</color>
+    <color name="tabUnChecked">#82b6ec</color>
+
+    <color name="service_movie_main">#b476da</color>
+    <color name="service_dining_main">#ee5e82</color>
+    <color name="service_berth_main">#46b8e7</color>
+    <color name="service_store_main">#ea5554</color>
+    <color name="service_game_main">#e85fb9</color>
+    <color name="service_live_main">#fa8501</color>
+    <color name="service_radio_main">#33c774</color>
+    <color name="service_more_main">#6f8ae4</color>
+    <color name="default_white">#FFF</color>
+    <color name="switch_off">#aa00aa</color>
+    <color name="switch_on">#00aa00</color>
+</resources>
