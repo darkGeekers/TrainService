@@ -10,6 +10,9 @@ import com.beardedhen.androidbootstrap.font.FontAwesome;
  * Created by BrainWang on 2016/3/27.
  */
 public class TrainServiceApplication extends Application {
+
+    public static String JourneyBroadcastAction="cn.trainservice.trainservice.JourneyBroadcastAction";
+
     public static String[] getTabTitles(Context context) {
         String[] result = {
                 context.getString(R.string.tab_journey),
@@ -28,9 +31,12 @@ public class TrainServiceApplication extends Application {
         return result;
     }
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
         TypefaceProvider.registerDefaultIconSets();
     }
+
 }

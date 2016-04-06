@@ -6,4 +6,6 @@ package cn.trainservice.trainservice.journey;
 public interface JourneyViewModelInterface {
 
     public abstract  void viewChange(int section);
+    public abstract  void stationChange(int index,String city);
+
 }

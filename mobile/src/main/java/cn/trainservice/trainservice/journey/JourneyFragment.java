@@ -1,15 +1,23 @@
 package cn.trainservice.trainservice.journey;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import cn.trainservice.trainservice.R;
+import cn.trainservice.trainservice.TrainServiceApplication;
 import cn.trainservice.trainservice.journey.model.ViewModel;
+import cn.trainservice.trainservice.journey.view.TicketInfo;
 import in.srain.cube.image.CubeImageView;
 import in.srain.cube.image.ImageLoader;
 import in.srain.cube.image.ImageLoaderFactory;
@@ -39,6 +47,9 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
     private ImageLoader imageLoader;
 
     private ViewModel model;
+    private View view;
+
+    private JourneyBroadcastReceiver receiver;
     public JourneyFragment() {
         // Required empty public constructor
     }
@@ -72,20 +83,41 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
         }
         model=new ViewModel(this);
         bindViewModel(model);
+        registerReceiver();
+
+    }
+
+    private void registerReceiver() {
+        receiver=new JourneyBroadcastReceiver();
+        IntentFilter filter=new IntentFilter();
+        filter.addAction(TrainServiceApplication.JourneyBroadcastAction);
+        getActivity().registerReceiver(receiver, filter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_journey, container, false);
-        CubeImageView thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
-        DefaultImageLoadHandler handler = new DefaultImageLoadHandler(getActivity());
-        handler.setLoadingResources(R.mipmap.loading);
-        imageLoader = ImageLoaderFactory.create(getActivity(),handler);
+        if(view==null){
+             view = inflater.inflate(R.layout.fragment_journey, container, false);
 
-        thumb_city_brief.loadImage(imageLoader, "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg");
-        return view;
+
+            LinearLayout llayout=(LinearLayout) view.findViewById(R.id.journeyLlayout);
+
+            llayout.addView(new TicketInfo(getContext(),"wby","10086","西安到北京").getView(),0);
+
+            llayout.addView(new TicketInfo(getContext(),"wby","10086","西安到北京").getView(),1);
+
+
+            CubeImageView thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
+            DefaultImageLoadHandler handler = new DefaultImageLoadHandler(getActivity());
+            handler.setLoadingResources(R.mipmap.loading);
+            imageLoader = ImageLoaderFactory.create(getActivity(),handler);
+
+            thumb_city_brief.loadImage(imageLoader, "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg");
+
+        }
+            return view;
     }
 
 
@@ -137,6 +169,12 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
         });
     }
 
+    @Override
+    public void stationChange(int index, String city) {
+
+    }
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -155,5 +193,15 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
 
     private void bindViewModel(ViewModel vmodel){
         model=vmodel;
+    }
+
+
+    //private
+    class JourneyBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
     }
 }
