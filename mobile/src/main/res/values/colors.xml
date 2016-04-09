@@ -17,4 +17,15 @@
     <color name="default_white">#FFF</color>
     <color name="switch_off">#aa00aa</color>
     <color name="switch_on">#00aa00</color>
+
+    <color name="ball1">#FFD91C</color>
+    <color name="ball2">#FF4B4A</color>
+    <color name="ball3">#3D8EFF</color>
+    <color name="stationItem">#666</color>
+
+    <integer-array name="colors">
+        <item>@color/ball1</item>
+        <item>@color/ball2</item>
+        <item>@color/ball3</item>
+    </integer-array>
 </resources>

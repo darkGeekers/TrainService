@@ -22,7 +22,6 @@ import com.beardedhen.androidbootstrap.AwesomeTextView;
 
 import cn.trainservice.trainservice.journey.JourneyFragment;
 import cn.trainservice.trainservice.service.ServiceFragment;
-import io.vov.vitamio.Vitamio;
 
 public class MainActivity extends AppCompatActivity implements
         JourneyFragment.OnFragmentInteractionListener, ServiceFragment.OnFragmentInteractionListener {
@@ -95,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        Vitamio.isInitialized(getApplicationContext());
-        startService(new Intent(this,BackgroundService.class));
+
+        startService(new Intent(this,StationNotifyService.class));
 
     }
 

@@ -9,22 +9,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import cn.trainservice.trainservice.R;
-import io.vov.vitamio.MediaPlayer;
-import io.vov.vitamio.Vitamio;
-import io.vov.vitamio.widget.MediaController;
-import io.vov.vitamio.widget.VideoView;
+
 
 /**
  * An activity representing a single Movie detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link MovieListActivity}.
  */
 public class MovieDetailActivity extends AppCompatActivity {
 
 
-    private VideoView videoView;
-    private MediaController mc;
     private long pos = 0;
 
     @Override
@@ -39,23 +33,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            Vitamio.isInitialized(this);
-            videoView = (VideoView) findViewById(R.id.videoView);
-            String uri = "http://192.168.1.100/Detective.Chinatown.2015.WEB-DL.x264-npuer.mkv";
-            videoView.setVideoPath(uri);
-            mc = new MediaController(this);
-            mc.setFileName("");
-            videoView.setMediaController(mc);
-
-            videoView.requestFocus();
-            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-
-                    mediaPlayer.setPlaybackSpeed(1.0f);
-                }
-            });
-            videoView.seekTo(10240);
 
         }
     }

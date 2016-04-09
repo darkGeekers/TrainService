@@ -6,22 +6,39 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.litesuits.http.exception.HttpException;
+import com.litesuits.http.listener.HttpListener;
+import com.litesuits.http.request.StringRequest;
+import com.litesuits.http.response.Response;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 import cn.trainservice.trainservice.R;
 import cn.trainservice.trainservice.TrainServiceApplication;
-import cn.trainservice.trainservice.journey.model.ViewModel;
+import cn.trainservice.trainservice.journey.model.StationlistRecyclerViewAdapter;
+import cn.trainservice.trainservice.journey.model.TrainStation;
+import cn.trainservice.trainservice.journey.util.JsonHelper;
 import cn.trainservice.trainservice.journey.view.TicketInfo;
 import in.srain.cube.image.CubeImageView;
 import in.srain.cube.image.ImageLoader;
 import in.srain.cube.image.ImageLoaderFactory;
-import in.srain.cube.image.ImageProvider;
 import in.srain.cube.image.impl.DefaultImageLoadHandler;
 
 
@@ -33,7 +50,7 @@ import in.srain.cube.image.impl.DefaultImageLoadHandler;
  * Use the {@link JourneyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class JourneyFragment extends Fragment implements JourneyViewModelInterface{
+public class JourneyFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -42,14 +59,20 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    public TextToSpeech speaker;
+    RecyclerView recyclerView;
     private OnFragmentInteractionListener mListener;
     private ImageLoader imageLoader;
+    private TicketInfo ticket;
+    private int currentCityId = -1;
 
-    private ViewModel model;
     private View view;
+    private ArrayList<TrainStation> stationslist = new ArrayList<>();
 
     private JourneyBroadcastReceiver receiver;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private StationlistRecyclerViewAdapter adapter;
+
     public JourneyFragment() {
         // Required empty public constructor
     }
@@ -81,15 +104,16 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        model=new ViewModel(this);
-        bindViewModel(model);
+
+
         registerReceiver();
+
 
     }
 
     private void registerReceiver() {
-        receiver=new JourneyBroadcastReceiver();
-        IntentFilter filter=new IntentFilter();
+        receiver = new JourneyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
         filter.addAction(TrainServiceApplication.JourneyBroadcastAction);
         getActivity().registerReceiver(receiver, filter);
     }
@@ -98,32 +122,74 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        if(view==null){
-             view = inflater.inflate(R.layout.fragment_journey, container, false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_journey, container, false);
+            LinearLayout llayout = (LinearLayout) view.findViewById(R.id.journeyLlayout);
+            recyclerView = (RecyclerView) view.findViewById(R.id.stationlistView);
+            adapter = new StationlistRecyclerViewAdapter(stationslist, getContext());
 
+            recyclerView.setAdapter(adapter);
+            swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+            swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
-            LinearLayout llayout=(LinearLayout) view.findViewById(R.id.journeyLlayout);
+                @Override
+                public void onRefresh() {
+                    // Toast.makeText(getContext(),"正在刷新",Toast.LENGTH_SHORT);
+                    // TODO Auto-generated method stub
+                    new Handler().postDelayed(new Runnable() {
 
-            llayout.addView(new TicketInfo(getContext(),"wby","10086","西安到北京").getView(),0);
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            // Toast.makeText(getContext(), "刷新完成", Toast.LENGTH_SHORT);
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    }, 3000);
+                }
+            });
+            TrainServiceApplication.setTickt(new TicketInfo(getContext()));
+            ticket = TrainServiceApplication.getTicket();
+            llayout.addView(ticket.getView(), 0);
 
-            llayout.addView(new TicketInfo(getContext(),"wby","10086","西安到北京").getView(),1);
-
+            CardView cardCurrentCity = (CardView) view.findViewById(R.id.card_current_city);
+            cardCurrentCity.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), CityDetailActivity.class));
+                }
+            });
 
             CubeImageView thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
             DefaultImageLoadHandler handler = new DefaultImageLoadHandler(getActivity());
             handler.setLoadingResources(R.mipmap.loading);
-            imageLoader = ImageLoaderFactory.create(getActivity(),handler);
-
+            imageLoader = ImageLoaderFactory.create(getActivity(), handler);
             thumb_city_brief.loadImage(imageLoader, "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg");
 
         }
-            return view;
+        if (speaker == null) {
+            speaker = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    //如果装载TTS引擎成功
+                    if (status == TextToSpeech.SUCCESS) {
+                        //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
+                        int result = speaker.setLanguage(Locale.CHINESE);
+                        //如果不支持设置的语言
+                        if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+                                && result != TextToSpeech.LANG_AVAILABLE) {
+                            Toast.makeText(getContext(), "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+        }
+
+
+        refreshSections();
+        return view;
     }
 
-
-    private void loadView(){
-
-    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -149,38 +215,84 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
         mListener = null;
     }
 
-    @Override
-    public void viewChange(final int section) {
 
-        getActivity().runOnUiThread(new Runnable() {
+//    public void loadTicketInfo(){
+//
+//    }
+
+    /**
+     * 刷新站点列表、城市介绍板块
+     */
+    public void refreshSections() {
+        new Thread(new Runnable() {
+
+            //请求站点列表信息
             @Override
             public void run() {
-                switch(section){
-                    case 1://journey用户信息部分
-                        break;
-                    case 2://车站列表部分
-                        break;
-                    case 3://城市介绍部分
-                        break;
-                    case 4:
-                        break;
-                }
+                String url = TrainServiceApplication.getStationListUrl();
+                TrainServiceApplication.getLiteHttp(getContext()).execute(new StringRequest(url).setHttpListener(
+                        new HttpListener<String>() {
+                            @Override
+                            public void onSuccess(String data, Response<String> response) {
+                                //填充到stationslist
+
+                                try {
+                                    JSONObject Json = new JSONObject(data);
+                                    boolean result = Json.getBoolean("result");
+                                    if (result) {
+                                        stationslist = JsonHelper.parseStationList(data);
+                                        adapter.loadStation(stationslist);
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            }
+
+                            @Override
+                            public void onFailure(HttpException e, Response<String> response) {
+                                Log.i("httpp", e.toString());
+                            }
+                        }
+                ));
+
+                //请求当前城市信息
+                TrainServiceApplication.getLiteHttp(getContext()).execute(new StringRequest("http://wangbaiyuan.cn").setHttpListener(
+                        new HttpListener<String>() {
+                            @Override
+                            public void onSuccess(String data, Response<String> response) {
+                                //   CityInfo.loadCurrentCityData();
+
+
+                            }
+
+                            @Override
+                            public void onFailure(HttpException e, Response<String> response) {
+                                Log.i("httpp", e.toString());
+                            }
+                        }
+                ));
             }
-        });
-    }
+        }).start();
 
-    @Override
-    public void stationChange(int index, String city) {
 
     }
 
+
+    public void loadStationList() {
+
+    }
 
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -191,17 +303,29 @@ public class JourneyFragment extends Fragment implements JourneyViewModelInterfa
     }
 
 
-    private void bindViewModel(ViewModel vmodel){
-        model=vmodel;
+    @Override
+    public void onDestroy() {
+        getActivity().unregisterReceiver(receiver);
+        speaker.shutdown();
+        super.onDestroy();
     }
 
-
     //private
-    class JourneyBroadcastReceiver extends BroadcastReceiver{
+    class JourneyBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            int stationId = intent.getIntExtra("stationId", -1);
+            String stationName = intent.getStringExtra("stationName");
+            String nextStation = intent.getStringExtra("nextStation");
+            if (currentCityId != stationId) {
+                refreshSections();
+                speaker.speak("尊敬的乘客：" + stationName + "站到了,下一站：" + nextStation, TextToSpeech.QUEUE_ADD, null);
+
+            }
 
         }
     }
+
+
 }

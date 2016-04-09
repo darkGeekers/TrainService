@@ -1,1 +1,1 @@
-include ':mobile', ':wear', ':sample', ':AndroidBootstrap', ':vitamio', ':cubeImage'
+include ':mobile', ':wear', ':vitamio', ':cubeImage', ':Superplayer'

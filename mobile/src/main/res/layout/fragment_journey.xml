@@ -6,7 +6,10 @@
     tools:context="cn.trainservice.trainservice.journey.JourneyFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -19,7 +22,6 @@
 
             android:orientation="vertical">
 
-            <include layout="@layout/journey_ticket_info"/>
             <include layout="@layout/journey_station_list"/>
             <include layout="@layout/journey_current_city"/>
 
@@ -30,4 +32,6 @@
 
 
     </ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>
+
 </FrameLayout>
