@@ -72,6 +72,7 @@ public class JourneyFragment extends Fragment {
     private JourneyBroadcastReceiver receiver;
     private SwipeRefreshLayout swipeRefreshLayout;
     private StationlistRecyclerViewAdapter adapter;
+    private CubeImageView thumb_city_brief;
 
     public JourneyFragment() {
         // Required empty public constructor
@@ -160,7 +161,7 @@ public class JourneyFragment extends Fragment {
                 }
             });
 
-            CubeImageView thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
+             thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
             DefaultImageLoadHandler handler = new DefaultImageLoadHandler(getActivity());
             handler.setLoadingResources(R.mipmap.loading);
             imageLoader = ImageLoaderFactory.create(getActivity(), handler);
@@ -168,21 +169,22 @@ public class JourneyFragment extends Fragment {
 
         }
         if (speaker == null) {
-            speaker = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    //如果装载TTS引擎成功
-                    if (status == TextToSpeech.SUCCESS) {
-                        //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
-                        int result = speaker.setLanguage(Locale.CHINESE);
-                        //如果不支持设置的语言
-                        if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
-                                && result != TextToSpeech.LANG_AVAILABLE) {
-                            Toast.makeText(getContext(), "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-            });
+            speaker = new TextToSpeech(getContext(), null);
+//            new TextToSpeech.OnInitListener() {
+//                @Override
+//                public void onInit(int status) {
+//                    //如果装载TTS引擎成功
+//                    if (status == TextToSpeech.SUCCESS) {
+//                        //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
+//                        int result = speaker.setLanguage(Locale.CHINESE);
+//                        //如果不支持设置的语言
+//                        if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
+//                                && result != TextToSpeech.LANG_AVAILABLE) {
+//                            Toast.makeText(getContext(), "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                }
+//            }
         }
 
 
@@ -223,7 +225,8 @@ public class JourneyFragment extends Fragment {
     /**
      * 刷新站点列表、城市介绍板块
      */
-    public void refreshSections() {
+
+    public void refreshStations() {
         new Thread(new Runnable() {
 
             //请求站点列表信息
@@ -259,9 +262,26 @@ public class JourneyFragment extends Fragment {
                             }
                         }
                 ));
+            }
+        }).start();
+    }
 
-                //请求当前城市信息
-                TrainServiceApplication.getLiteHttp(getContext()).execute(new StringRequest("http://wangbaiyuan.cn").setHttpListener(
+    public void refreshSections() {
+
+       refreshStations();
+        refreshCurrentcity();
+
+    }
+
+
+    public void refreshCurrentcity() {
+        new Thread(new Runnable() {
+
+            //请求站点列表信息
+            @Override
+            public void run() {
+                String url = TrainServiceApplication.getStationListUrl();
+                TrainServiceApplication.getLiteHttp(getContext()).execute(new StringRequest(url).setHttpListener(
                         new HttpListener<String>() {
                             @Override
                             public void onSuccess(String data, Response<String> response) {
@@ -278,13 +298,6 @@ public class JourneyFragment extends Fragment {
                 ));
             }
         }).start();
-
-
-    }
-
-
-    public void loadStationList() {
-
     }
 
     /**
@@ -320,7 +333,7 @@ public class JourneyFragment extends Fragment {
             String nextStation = intent.getStringExtra("nextStation");
             if (currentCityId != stationId) {
                 refreshSections();
-                speaker.speak("尊敬的乘客：" + stationName + "站到了,下一站：" + nextStation, TextToSpeech.QUEUE_ADD, null);
+                speaker.speak("Dear passengers,Here is " + stationName + "  Railway Station , the next one is " + nextStation, TextToSpeech.QUEUE_ADD, null);
 
             }
 

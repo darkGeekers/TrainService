@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <android.support.v7.widget.CardView android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_current_city"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -16,20 +17,27 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            android:gravity="bottom">
+            <com.beardedhen.androidbootstrap.AwesomeTextView
+                android:id="@+id/ico_location"
+                app:bootstrapBrand="success"
+                style="@style/wrapping_fa_text_mid"
+                app:fontAwesomeIcon="fa_location_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="当前城市：西安"
+                android:text="Current City：- -"
                 android:id="@+id/textView12" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="(陕西省西安市火车站)"
+                android:text="(- - - )"
                 android:id="@+id/textView13"
                 android:ellipsize="start"
                 android:gravity="center|right" />
@@ -62,6 +70,29 @@
                 android:layout_gravity="center"
                 android:maxLines="5" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:divider="@drawable/linear_divider"
+            android:showDividers="middle"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <com.beardedhen.androidbootstrap.AwesomeTextView
+                android:id="@+id/ico_city_food"
+                app:bootstrapBrand="primary"
+                style="@style/wrapping_fa_text_mid"
+                app:fontAwesomeIcon="fa_location_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/city_foods"></LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

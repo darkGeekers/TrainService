@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.trainservice.trainservice.journey.view.TicketInfo;
+import cn.trainservice.trainservice.view.CameraView;
 
 /**
  * A login screen that offers login via email/password.
@@ -56,6 +57,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mTicketNumberView;
     private View mProgressView;
     private View mLoginFormView;
+    private CameraView surfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +92,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+         surfaceView=(CameraView)findViewById(R.id.surfaceView);
+        surfaceView.bindActivity(this);
+        surfaceView.startCamera();
     }
+
+
 
 
     /**

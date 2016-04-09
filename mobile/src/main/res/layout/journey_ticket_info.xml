@@ -39,7 +39,8 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="K630次"
                     android:id="@+id/textView"
-                    android:textColor="@color/colorPrimary" />
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginTop="-5dp" />
             </LinearLayout>
 
             <FrameLayout

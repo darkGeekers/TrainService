@@ -3,12 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="2dp"
+    android:paddingBottom="1dp">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_current_mark_container"
-        android:layout_weight="7" >
+        android:layout_weight="7"
+        android:layout_gravity="center">
         <com.beardedhen.androidbootstrap.AwesomeTextView
             android:id="@+id/tv_current_station_mark"
 
@@ -23,35 +26,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="站次"
+        android:text="@string/station_index"
         android:textColor="@color/stationItem"
         android:id="@+id/tv_station_index"
-        android:layout_weight="7" />
+        android:layout_weight="7"
+        android:layout_gravity="center"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="站名"
+        android:text="@string/station_name"
         android:textColor="@color/stationItem"
         android:id="@+id/tv_station_name"
-        android:layout_weight="6" />
+        android:layout_weight="6"
+        android:layout_gravity="center"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="到站时间"
+        android:text="@string/station_arrivaltime"
         android:textColor="@color/stationItem"
         android:id="@+id/tv_station_arrivalTime"
-        android:layout_weight="6" />
+        android:layout_weight="6"
+        android:layout_gravity="center"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="停留时长"
+        android:text="@string/timeStay"
         android:textColor="@color/stationItem"
         android:id="@+id/tv_station_timeStay"
-        android:layout_weight="6" />
+        android:layout_weight="6"
+        android:layout_gravity="center"
+        android:textAlignment="center" />
 </LinearLayout>

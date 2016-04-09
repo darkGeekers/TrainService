@@ -17,8 +17,6 @@ public class StationNotifyService extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
-        createNotify("西安站到了", "下一站：商丘");
-
         listenUDPServer.start();
     }
 
@@ -48,6 +46,8 @@ public class StationNotifyService extends Service {
     private Thread listenUDPServer=new Thread(new Runnable() {
         @Override
         public void run() {
+            String stationName="Xi'An";
+            String nextStation="Luo yang ";
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
@@ -56,11 +56,14 @@ public class StationNotifyService extends Service {
             Intent notifyIntent=new Intent();
             notifyIntent.setAction(TrainServiceApplication.JourneyBroadcastAction);
             notifyIntent.putExtra("stationId",291);
+
+
 //            notifyIntent.putExtra("stationName","Xi'An Railway Station");
 //            notifyIntent.putExtra("nextStation","luo'yang Railway Station");
 
-            notifyIntent.putExtra("stationName","西安");
-            notifyIntent.putExtra("nextStation","洛阳");
+            notifyIntent.putExtra("stationName",stationName);
+            notifyIntent.putExtra("nextStation",nextStation);
+            createNotify("Here is "+stationName+" Railway Station ", "Next："+nextStation);
             sendBroadcast(notifyIntent);
 
         //send

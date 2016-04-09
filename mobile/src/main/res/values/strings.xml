@@ -34,7 +34,7 @@
     <string name="copyright">all rights reserved</string>
     <string name="app_desc">Enjoy a life in train</string>
     <string name="title_activity_radio">Sound of Railway</string>
-    <string name="city_brief_example">西安，古称长安，与罗马、雅典、君士坦丁堡并称世界四大古都。中国六大古都之一，历史上曾有13个王朝在此建都，历时近1100年。</string>
+    <string name="city_brief_example">The information is Loading \n please wait...</string>
     <string name="title_activity_city_detail">CityDetailActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -131,5 +131,18 @@
     <string name="SeatHardSeat">Hard Seat</string>
     <string name="journey_ticket_info_notlogin">Not Login</string>
     <string name="journey_notlogin_promote">Login to get personalized services!</string>
-    <string name="minute">min</string>
+    <string name="minute">minutes</string>
+    <string name="station_index">Index</string>
+    <string name="station_name">Station</string>
+    <string name="station_arrivaltime">Arrival Time</string>
+    <string name="timeStay">Stay</string>
+    <string name="station_stop">- stops left</string>
+    <string name="service_diningHall">Restaurant</string>
+    <string name="service_movies">Cinema</string>
+    <string name="service_store">Store</string>
+    <string name="service_BookingBerth">Book Berth</string>
+    <string name="service_gameHall">Game Hall</string>
+    <string name="service_liveVideo">Live Telecast</string>
+    <string name="service_radio">Radio</string>
+    <string name="service_more">More</string>
 </resources>

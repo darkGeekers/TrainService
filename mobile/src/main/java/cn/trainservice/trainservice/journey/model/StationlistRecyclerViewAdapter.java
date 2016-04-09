@@ -19,7 +19,7 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
 
     private ArrayList<TrainStation> mValues;
     private Context mcontext;
-    private int currentStationIndex=4;
+    private int currentStationId=4;
     public StationlistRecyclerViewAdapter(ArrayList<TrainStation> stations, Context context) {
         mValues = stations;
         mcontext=context;
@@ -42,7 +42,7 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
         holder.tv_station_name.setText(mValues.get(position).mName);
         holder.tv_arrivalTime.setText(mValues.get(position).mArrivalTime);
         holder.tv_time_stay.setText(mValues.get(position).mTimeStay+mcontext.getString(R.string.minute));
-        if(currentStationIndex==position){
+        if(currentStationId==mValues.get(position).mId){
             holder.tv_station_index.setTextColor(mcontext.getResources().getColor(R.color.colorPrimary));
             holder.tv_station_name.setTextColor(mcontext.getResources().getColor(R.color.colorPrimary));
             holder.tv_arrivalTime.setTextColor(mcontext.getResources().getColor(R.color.colorPrimary));
@@ -72,7 +72,7 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
     }
 
     public void setMarkAtIndex(int index){
-        currentStationIndex=index;
+        currentStationId=index;
         notifyDataSetChanged();
     }
 
