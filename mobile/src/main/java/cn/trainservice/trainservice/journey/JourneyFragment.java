@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -151,7 +152,15 @@ public class JourneyFragment extends Fragment {
             });
             TrainServiceApplication.setTickt(new TicketInfo(getContext()));
             ticket = TrainServiceApplication.getTicket();
-            llayout.addView(ticket.getView(), 0);
+            FrameLayout childview = ticket.getView();
+            childview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TrainServiceApplication.attemptToEnterUserCenter(getActivity());
+                    //    context.startActivity(new Intent(context, LoginActivity.class));
+                }
+            });
+            llayout.addView(childview, 0);
 
             CardView cardCurrentCity = (CardView) view.findViewById(R.id.card_current_city);
             cardCurrentCity.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +170,7 @@ public class JourneyFragment extends Fragment {
                 }
             });
 
-             thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
+            thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
             DefaultImageLoadHandler handler = new DefaultImageLoadHandler(getActivity());
             handler.setLoadingResources(R.mipmap.loading);
             imageLoader = ImageLoaderFactory.create(getActivity(), handler);
@@ -268,7 +277,7 @@ public class JourneyFragment extends Fragment {
 
     public void refreshSections() {
 
-       refreshStations();
+        refreshStations();
         refreshCurrentcity();
 
     }
@@ -305,7 +314,7 @@ public class JourneyFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
