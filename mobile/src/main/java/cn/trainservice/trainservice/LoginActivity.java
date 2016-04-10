@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,12 +28,28 @@ import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
+import com.litesuits.http.data.NameValuePair;
 import com.litesuits.http.exception.HttpException;
 import com.litesuits.http.listener.HttpListener;
+import com.litesuits.http.request.AbstractRequest;
 import com.litesuits.http.request.StringRequest;
+import com.litesuits.http.request.content.UrlEncodedFormBody;
+import com.litesuits.http.request.param.HttpMethods;
 import com.litesuits.http.response.Response;
+import com.litesuits.http.utils.HttpUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import cn.trainservice.trainservice.journey.view.TicketInfo;
@@ -144,34 +163,128 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+       Log.d("data","post");
             mProgressView.requestFocus();
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    TrainServiceApplication.getLiteHttp(LoginActivity.this).execute(new StringRequest("http://wangbaiyuan.cn").setHttpListener(
-                            new HttpListener<String>() {
+                    String uploadUrl = TrainServiceApplication.user_Login();
+//
+//                    HttpURLConnection connection = null;
+//                    DataOutputStream out = null;
+//                    try {
+//                        Log.d("data","posting");
+//                        URL url = new URL(uploadUrl);
+//                        connection = (HttpURLConnection) url.openConnection();
+//                        connection.setConnectTimeout(10 * 1000);
+//                        connection.setRequestMethod("POST");
+//                        connection.setUseCaches(false);
+//                        connection.setRequestProperty("Accept", "text/html,application/xhtml+xml," +
+//                                "application/xml;q=0.9,*/*;q=0.8");
+//                        connection.addRequestProperty("User-Agent", "Mozilla / 5.0 (Windows NT 6.3;" +
+//                                "WOW64)AppleWebKit / 537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 " +
+//                                "Safari/537.36 SE 2.X MetaSr 1.0");
+//                        connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+//                        connection.addRequestProperty("Accept-Language", "zh-CN");
+//                        connection.addRequestProperty("Charset", "UTF-8");
+//                        connection.addRequestProperty("Connection", "Keep-Alive");
+//                        connection.setDoInput(true);
+//                        connection.setDoOutput(true);
+//                        connection.connect();
+//                        out = new DataOutputStream(connection.getOutputStream());
+//                        String str = "user_id" + mIDCardNumberView.getText().toString() + "&check_num" + mTicketNumberView.getText().toString();
+//                        out.writeBytes(str);
+//                        out.close();
+//                        String response = "";
+//                        int responsenum = connection.getResponseCode();
+//                        if (responsenum == 200) {
+//                            DataInputStream input = new DataInputStream(connection.getInputStream());
+//                            String line = "";
+//                            while ((line = input.readLine()) != null) {
+//                                response = response + line;
+//                            }
+//                            Log.d("data", response);
+//                            input.close();
+//                        } else {
+//                            response = null;
+//                        }
+//                        System.out.print(response);
+//
+//                    } catch (MalformedURLException e) {
+//                        e.printStackTrace();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } finally {
+//                        if (connection != null)
+//                            connection.disconnect();
+//                    }
+//
+//                }
+                    final StringRequest postRequest = new StringRequest(uploadUrl)
+                            .setMethod(HttpMethods.Post)
+                            .setHttpListener(new HttpListener<String>(true, false, true) {
                                 @Override
-                                public void onSuccess(String data, Response<String> response) {
-                                    boolean success = false;
-                                    int code = (success == false ? 0 : 1);
-                                    responseLoginResult(code);
-                                    //在此填充乘客信息
-                                    TrainServiceApplication.setTickt(new TicketInfo(LoginActivity.this));
+                                public void onStart(AbstractRequest<String> request) {
+                                    super.onStart(request);
+                                    showProgress(true);
                                 }
 
                                 @Override
-                                public void onFailure(HttpException e, Response<String> response) {
-                                    responseLoginResult(2);
+                                public void onUploading(AbstractRequest<String> request, long total, long len) {
+                                    showProgress(true);
                                 }
-                            }
-                    ));
+
+                                @Override
+                                public void onEnd(Response<String> response) {
+                                    showProgress(false);
+                                    if (response.isConnectSuccess()) {
+                                        boolean success = false;
+                                        String jsonstr=response.getResult();
+                                        try{
+                                            JSONObject js= new JSONObject(jsonstr);
+                                            if(js.has("result")){
+                                                success=js.getBoolean("result");
+                                                int code = (success == false ? 0 : 1);
+                                                JSONObject jso=js.getJSONObject("info");
+                                                String user_ID=jso.getString("User_ID");
+                                                String  userName=jso.getString("User_Name");
+                                                String train_Name=jso.getString("Train_Name");
+                                                String startname=jso.getString("startname");
+                                                String endname=jso.getString("User_ID");
+
+                                                TrainServiceApplication.setTickt(
+                                                        new TicketInfo(LoginActivity.this,train_Name,userName,user_ID,startname,endname));
+
+
+                                                responseLoginResult(code);
+                                                Log.d("data", response.getResult());
+
+                                            }
+
+
+
+
+                                        }catch (JSONException e){
+
+                                        }
+                                        } else {
+                                        HttpUtil.showTips(LoginActivity.this, "Upload Failure", response.getException() + "");
+                                    }
+
+                                }
+                            });
+                    LinkedList<NameValuePair> pList = new LinkedList<>();
+                    pList.add(new NameValuePair("user_id",mIDCardNumberView.getText().toString() ));
+                    pList.add(new NameValuePair("check_num", mTicketNumberView.getText().toString()));
+                    postRequest.setHttpBody(new UrlEncodedFormBody(pList));
+                    TrainServiceApplication.getLiteHttp(LoginActivity.this).executeAsync(postRequest);
                 }
             }).start();
 
+
         }
     }
-
     public void responseLoginResult(final int code) {
 
         runOnUiThread(new Runnable() {
@@ -187,6 +300,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         //
                         TrainServiceApplication.hasLogin = true;
                         finish();
+                        startActivity(new Intent(LoginActivity.this,MainActivity.class));
                         showProgress(false);
                         break;
                     case 2:

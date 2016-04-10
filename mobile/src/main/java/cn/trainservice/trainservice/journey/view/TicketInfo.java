@@ -19,7 +19,7 @@ import cn.trainservice.trainservice.TrainServiceApplication;
  */
 public class TicketInfo  {
     public Context context;
-    public String userName="",ID="", fromTo="";
+    public String userName="",ID="",from="",To="",ticketName="";
 
     public enum TicketTypes{
         Student{
@@ -57,11 +57,13 @@ public class TicketInfo  {
     public TicketInfo (Context context){
         this.context=context;
     }
-    public TicketInfo (Context context,String userName,String ID,String fromTo){
+    public TicketInfo (Context context,String ticketName,String userName,String ID,String from,String To){
         this.context=context;
+        this.ticketName=ticketName;
         this.userName=userName;
         this.ID=ID;
-        this.fromTo=fromTo;
+        this.from=from;
+        this.To=To;
     }
     public FrameLayout getView (){
         FrameLayout view= (FrameLayout) LayoutInflater.from(context).inflate(R.layout.journey_ticket_info,null);
@@ -80,13 +82,7 @@ public class TicketInfo  {
         }
         containerview.removeAllViews();
         containerview.addView(childview);
-        childview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TrainServiceApplication.attemptToEnterUserCenter(context);
-            //    context.startActivity(new Intent(context, LoginActivity.class));
-            }
-        });
+
         //view.setLayoutParams(new ViewGroup.LayoutParams());
         return view;
     }
