@@ -65,7 +65,6 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
             try {
                 camera = Camera.open();
             } catch (Exception e) {
-                camera.release();//释放资源
                 camera = null;
                 e.printStackTrace();
             }
