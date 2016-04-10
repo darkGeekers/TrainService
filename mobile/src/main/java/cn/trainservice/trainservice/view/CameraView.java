@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 /**
  * Created by BrainWang on 2016/4/9.
  */
+
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback {
 
     private final SurfaceHolder surfaceHolder;
