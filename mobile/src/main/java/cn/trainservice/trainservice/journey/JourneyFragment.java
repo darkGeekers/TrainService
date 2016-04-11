@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.litesuits.http.exception.HttpException;
 import com.litesuits.http.listener.HttpListener;
@@ -29,10 +28,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import cn.trainservice.trainservice.R;
 import cn.trainservice.trainservice.TrainServiceApplication;
+import cn.trainservice.trainservice.journey.model.CityInfo;
 import cn.trainservice.trainservice.journey.model.StationlistRecyclerViewAdapter;
 import cn.trainservice.trainservice.journey.model.TrainStation;
 import cn.trainservice.trainservice.journey.util.JsonHelper;
@@ -74,6 +73,7 @@ public class JourneyFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private StationlistRecyclerViewAdapter adapter;
     private CubeImageView thumb_city_brief;
+    private CardView cardCurrentCity;
 
     public JourneyFragment() {
         // Required empty public constructor
@@ -137,17 +137,8 @@ public class JourneyFragment extends Fragment {
 
                 @Override
                 public void onRefresh() {
-                    // Toast.makeText(getContext(),"正在刷新",Toast.LENGTH_SHORT);
-                    // TODO Auto-generated method stub
-                    new Handler().postDelayed(new Runnable() {
+                    refreshSections();
 
-                        @Override
-                        public void run() {
-                            // TODO Auto-generated method stub
-                            // Toast.makeText(getContext(), "刷新完成", Toast.LENGTH_SHORT);
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    }, 3000);
                 }
             });
             TrainServiceApplication.setTickt(new TicketInfo(getContext()));
@@ -162,19 +153,29 @@ public class JourneyFragment extends Fragment {
             });
             llayout.addView(childview, 0);
 
-            CardView cardCurrentCity = (CardView) view.findViewById(R.id.card_current_city);
+             cardCurrentCity = (CardView) view.findViewById(R.id.card_current_city);
+            //cardCurrentCity.setEnabled(false);
+            final String mName = "Xi'an";
+            String mIntroduce = "";
+            final String mImageUrl =  "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg";
+            final String mAllIntroduceUrl = "https://en.m.wikipedia.org/wiki/Xi%27an";
+
             cardCurrentCity.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), CityDetailActivity.class));
+
+                    Intent intent=new Intent(getActivity(), CityDetailActivity.class);
+                    intent.putExtra("url",mAllIntroduceUrl);
+                    intent.putExtra("cityName",mName);
+                    intent.putExtra("imgUrl",mImageUrl);
+                    startActivity(intent);
                 }
             });
-
             thumb_city_brief = (CubeImageView) view.findViewById(R.id.thumb_city_brief);
             DefaultImageLoadHandler handler = new DefaultImageLoadHandler(getActivity());
             handler.setLoadingResources(R.mipmap.loading);
             imageLoader = ImageLoaderFactory.create(getActivity(), handler);
-            thumb_city_brief.loadImage(imageLoader, "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg");
+
 
         }
         if (speaker == null) {
@@ -236,6 +237,13 @@ public class JourneyFragment extends Fragment {
      */
 
     public void refreshStations() {
+        swipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
         new Thread(new Runnable() {
 
             //请求站点列表信息
@@ -273,6 +281,13 @@ public class JourneyFragment extends Fragment {
                 ));
             }
         }).start();
+        swipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     public void refreshSections() {
@@ -284,18 +299,44 @@ public class JourneyFragment extends Fragment {
 
 
     public void refreshCurrentcity() {
+        swipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
         new Thread(new Runnable() {
 
             //请求站点列表信息
             @Override
             public void run() {
-                String url = TrainServiceApplication.getStationListUrl();
+                final String url = TrainServiceApplication.getStationListUrl();
                 TrainServiceApplication.getLiteHttp(getContext()).execute(new StringRequest(url).setHttpListener(
                         new HttpListener<String>() {
                             @Override
                             public void onSuccess(String data, Response<String> response) {
-                                //   CityInfo.loadCurrentCityData();
+                                String mId = "";
+                                final String mName = "Xi'an";
+                                String mIntroduce = "";
+                                final String mImageUrl =  "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg";
+                                final String mAllIntroduceUrl = "https://en.m.wikipedia.org/wiki/Xi%27an";
+                                String mAddress = "";
+                                thumb_city_brief.loadImage(imageLoader,mImageUrl);
+                                CityInfo.loadCurrentCityData(mId, mName, mIntroduce, mImageUrl,
+                                        mAllIntroduceUrl, mAddress);//填充当前城市信息
+                               // cardCurrentCity.setEnabled(true);
+                                cardCurrentCity.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
 
+                                        Intent intent=new Intent(getActivity(), CityDetailActivity.class);
+                                        intent.putExtra("url",mAllIntroduceUrl);
+                                        intent.putExtra("cityName",mName);
+                                        intent.putExtra("imgUrl",mImageUrl);
+                                        startActivity(intent);
+                                    }
+                                });
 
                             }
 
@@ -307,6 +348,13 @@ public class JourneyFragment extends Fragment {
                 ));
             }
         }).start();
+        swipeRefreshLayout.post(new Runnable() {
+
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     /**
@@ -314,7 +362,7 @@ public class JourneyFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.

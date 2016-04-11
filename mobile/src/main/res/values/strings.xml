@@ -35,7 +35,7 @@
     <string name="app_desc">Enjoy a life in train</string>
     <string name="title_activity_radio">Sound of Railway</string>
     <string name="city_brief_example">The information is Loading \n please wait...</string>
-    <string name="title_activity_city_detail">CityDetailActivity</string>
+    <string name="title_activity_city_detail">City Detail</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
