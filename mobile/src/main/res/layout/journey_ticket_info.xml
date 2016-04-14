@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="K630次"
+                    android:text="No K630"
                     android:id="@+id/textView"
                     android:textColor="@color/colorPrimary"
                     android:layout_marginTop="-5dp" />

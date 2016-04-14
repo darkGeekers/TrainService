@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getBaseContext(), LoginActivity.class));
+                TrainServiceApplication.attemptToEnterUserCenter(MainActivity.this);
             }
         });
         // Create the adapter that will return a fragment for each of the three
@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this,SettingsActivity.class));
             return true;
         }
 
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements
                 case 1:
                     return ServiceFragment.newInstance("", "");
                 case 2:
-                    return JourneyFragment.newInstance("", "");
+                   // return JourneyFragment.newInstance("", "");
             }
 
             // getItem is called to instantiate the fragment for the given page.

@@ -25,7 +25,7 @@
     <string name="title_food_list">美食列表</string>
     <string name="title_movie_detail">电影详情</string>
     <string name="title_activity_radio">铁路之声</string>
-    <string name="copyright">版权保留</string>
+    <string name="copyright">©2016 版权保留.</string>
     <string name="title_movie_list">电影列表</string>
     <string name="title_serviceitem_detail">服务详情</string>
     <string name="title_serviceitem_list">服务列表</string>
@@ -44,7 +44,7 @@
     <string name="station_name">站名</string>
     <string name="station_arrivaltime">到站时间</string>
     <string name="timeStay">停留时长</string>
-    <string name="station_stop">还有-站</string>
+    <string name="station_stop">共-站</string>
     <string name="service_diningHall">餐厅</string>
     <string name="service_gameHall">游戏大厅</string>
     <string name="service_liveVideo">沿途直播</string>
@@ -52,4 +52,7 @@
     <string name="service_movies">电影院</string>
     <string name="service_radio">铁路之声</string>
     <string name="service_store">商店</string>
+    <string name="service_BookingBerth">订卧铺</string>
+    <string name="tv_cityCurrentCity">当前城市：</string>
+    <string name="tv_notices">Dear passengers, you do not have to log in, you can get personalized service after login!</string>
 </resources>

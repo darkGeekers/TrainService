@@ -2,22 +2,28 @@ package cn.trainservice.trainservice.journey;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.litesuits.http.exception.HttpException;
 import com.litesuits.http.listener.HttpListener;
@@ -29,6 +35,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import cn.trainservice.trainservice.MainActivity;
 import cn.trainservice.trainservice.R;
 import cn.trainservice.trainservice.TrainServiceApplication;
 import cn.trainservice.trainservice.journey.model.CityInfo;
@@ -74,6 +81,14 @@ public class JourneyFragment extends Fragment {
     private StationlistRecyclerViewAdapter adapter;
     private CubeImageView thumb_city_brief;
     private CardView cardCurrentCity;
+    private TextView tv_train_start;
+    private TextView tv_train_end;
+    private TextView tv_notices;
+ //   private TextView tv_ticket_end;
+    private TextView tv_current_cityName;
+    private TextView tv_city_introduce;
+    private TextView tv_city_address;
+    private TextView tv_station_stop;
 
     public JourneyFragment() {
         // Required empty public constructor
@@ -129,7 +144,6 @@ public class JourneyFragment extends Fragment {
             LinearLayout llayout = (LinearLayout) view.findViewById(R.id.journeyLlayout);
             recyclerView = (RecyclerView) view.findViewById(R.id.stationlistView);
             adapter = new StationlistRecyclerViewAdapter(stationslist, getContext());
-
             recyclerView.setAdapter(adapter);
             swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
             swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
@@ -141,6 +155,7 @@ public class JourneyFragment extends Fragment {
 
                 }
             });
+            if(TrainServiceApplication.getTicket()==null)
             TrainServiceApplication.setTickt(new TicketInfo(getContext()));
             ticket = TrainServiceApplication.getTicket();
             FrameLayout childview = ticket.getView();
@@ -153,21 +168,22 @@ public class JourneyFragment extends Fragment {
             });
             llayout.addView(childview, 0);
 
-             cardCurrentCity = (CardView) view.findViewById(R.id.card_current_city);
+            cardCurrentCity = (CardView) view.findViewById(R.id.card_current_city);
             //cardCurrentCity.setEnabled(false);
-            final String mName = "Xi'an";
+            final String mName = "Xian";
             String mIntroduce = "";
-            final String mImageUrl =  "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg";
-            final String mAllIntroduceUrl = "https://en.m.wikipedia.org/wiki/Xi%27an";
+            String mAllIntroduceHomeUrl = TrainServiceApplication.getCurrentCityInfoUrl() + "/" + 8;
+            final String mImageUrl = mAllIntroduceHomeUrl + "/thumb.jpg";
+            final String mAllIntroduceUrl = mAllIntroduceHomeUrl + "/index.html";
 
             cardCurrentCity.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    Intent intent=new Intent(getActivity(), CityDetailActivity.class);
-                    intent.putExtra("url",mAllIntroduceUrl);
-                    intent.putExtra("cityName",mName);
-                    intent.putExtra("imgUrl",mImageUrl);
+                    Intent intent = new Intent(getActivity(), CityDetailActivity.class);
+                    intent.putExtra("url", mAllIntroduceUrl);
+                    intent.putExtra("cityName", mName);
+                    intent.putExtra("imgUrl", mImageUrl);
                     startActivity(intent);
                 }
             });
@@ -176,25 +192,19 @@ public class JourneyFragment extends Fragment {
             handler.setLoadingResources(R.mipmap.loading);
             imageLoader = ImageLoaderFactory.create(getActivity(), handler);
 
+            tv_train_start = (TextView) view.findViewById(R.id.tv_train_start);
+            tv_train_end = (TextView) view.findViewById(R.id.tv_train_end);
+            tv_notices = (TextView) view.findViewById(R.id.tv_notices);
+            tv_station_stop = (TextView) view.findViewById(R.id.tv_station_stop);
+
+            tv_current_cityName = (TextView) llayout.findViewById(R.id.tv_current_cityName);
+           // tv_current_cityName = (TextView) llayout.findViewById(R.id.tv_as);
+            tv_city_introduce = (TextView) llayout.findViewById(R.id.tv_city_introduce);
+            tv_city_address = (TextView) llayout.findViewById(R.id.tv_city_address);
 
         }
         if (speaker == null) {
             speaker = new TextToSpeech(getContext(), null);
-//            new TextToSpeech.OnInitListener() {
-//                @Override
-//                public void onInit(int status) {
-//                    //如果装载TTS引擎成功
-//                    if (status == TextToSpeech.SUCCESS) {
-//                        //设置使用美式英语朗读(虽然设置里有中文选项Locale.Chinese,但并不支持中文)
-//                        int result = speaker.setLanguage(Locale.CHINESE);
-//                        //如果不支持设置的语言
-//                        if (result != TextToSpeech.LANG_COUNTRY_AVAILABLE
-//                                && result != TextToSpeech.LANG_AVAILABLE) {
-//                            Toast.makeText(getContext(), "TTS暂时不支持这种语言朗读", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                }
-//            }
         }
 
 
@@ -261,6 +271,10 @@ public class JourneyFragment extends Fragment {
                                     boolean result = Json.getBoolean("result");
                                     if (result) {
                                         stationslist = JsonHelper.parseStationList(data);
+                                        tv_station_stop.setText(stationslist.size()+"stops");
+                                        tv_train_start.setText(stationslist.get(0).mName);
+                                        tv_train_end.setText(stationslist.get(stationslist.size()-1).mName);
+
                                         adapter.loadStation(stationslist);
                                         adapter.notifyDataSetChanged();
                                     } else {
@@ -311,29 +325,58 @@ public class JourneyFragment extends Fragment {
             //请求站点列表信息
             @Override
             public void run() {
-                final String url = TrainServiceApplication.getStationListUrl();
+
+                final String url = TrainServiceApplication.getCurrentCityInfoUrl();
                 TrainServiceApplication.getLiteHttp(getContext()).execute(new StringRequest(url).setHttpListener(
                         new HttpListener<String>() {
                             @Override
                             public void onSuccess(String data, Response<String> response) {
-                                String mId = "";
-                                final String mName = "Xi'an";
-                                String mIntroduce = "";
-                                final String mImageUrl =  "http://www.wzljl.cn/images/attachement/jpg/site2/20100407/001c25db23ed0d269b7a30.jpg";
-                                final String mAllIntroduceUrl = "https://en.m.wikipedia.org/wiki/Xi%27an";
-                                String mAddress = "";
-                                thumb_city_brief.loadImage(imageLoader,mImageUrl);
-                                CityInfo.loadCurrentCityData(mId, mName, mIntroduce, mImageUrl,
-                                        mAllIntroduceUrl, mAddress);//填充当前城市信息
-                               // cardCurrentCity.setEnabled(true);
+                                CityInfo.loadCurrentCityData(data);//填充当前城市信息
+                                currentCityId=CityInfo.getCurrentCityInfo().mId;
+                                adapter.setMarkAtCity(currentCityId);
+                                final String mName =  CityInfo.getCurrentCityInfo().mName;
+                                final String mImageUrl= CityInfo.getCurrentCityInfo().mImageUrl;
+
+                                thumb_city_brief.loadImage(imageLoader, mImageUrl);
+                                tv_current_cityName.setText(CityInfo.getCurrentCityInfo().mName);
+                                tv_city_introduce.setText(CityInfo.getCurrentCityInfo().mIntroduce);
+                                 tv_city_address.setText(CityInfo.getCurrentCityInfo().mAddress);
+
+                                int currentIndex=-1;
+                                int destIndex=-1;
+                                if(stationslist.size()>0 && !TrainServiceApplication.getTicket().To.equals("-1")){
+                                    for(int i=0;i<stationslist.size();i++){
+                                        if(stationslist.get(i).mId==currentCityId){
+                                            currentIndex = i;
+                                        }
+                                        if(stationslist.get(i).mName.equals(TrainServiceApplication.getTicket().To)){
+                                            destIndex = i;
+                                        }
+                                    }
+
+                                }
+                                int less=destIndex-currentIndex;
+                                boolean g=(currentIndex>0&&less>-1);
+                                if(g&&less==0){
+                                    notifyReach();
+                                }
+
+                                String noticeHtml="You start from the <font color=\"red\"><b>"+TrainServiceApplication.getTicket().from
+                                        +"</b> </font>Railway Station," +
+                                        " will arrive at the <font color=\"red\"><b>"+TrainServiceApplication.getTicket().To
+                                        +" </b></font>Station.Current station is <font color=\"red\"><b>"
+                                        +CityInfo.getCurrentCityInfo().mName+"</b></font>"
+                                        +(g? ",There will be <font color=\"red\"><b>"+less +"</b></font> stops to the destination":"");
+                                tv_notices.setText(Html.fromHtml(noticeHtml));
+                                // cardCurrentCity.setEnabled(true);
                                 cardCurrentCity.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
 
-                                        Intent intent=new Intent(getActivity(), CityDetailActivity.class);
-                                        intent.putExtra("url",mAllIntroduceUrl);
-                                        intent.putExtra("cityName",mName);
-                                        intent.putExtra("imgUrl",mImageUrl);
+                                        Intent intent = new Intent(getActivity(), CityDetailActivity.class);
+                                        intent.putExtra("url", CityInfo.getCurrentCityInfo().mAllIntroduceUrl);
+                                        intent.putExtra("cityName", mName);
+                                        intent.putExtra("imgUrl", mImageUrl);
                                         startActivity(intent);
                                     }
                                 });
@@ -380,6 +423,31 @@ public class JourneyFragment extends Fragment {
         super.onDestroy();
     }
 
+
+    public void notifyReach(){
+
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        final Ringtone r = RingtoneManager.getRingtone(getActivity(), notification);
+        r.play();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        //    设置Title的图标
+        builder.setIcon(R.mipmap.ic_launcher);
+        //    设置Title的内容
+        builder.setTitle("Your Destination is Arrived!");
+        //    设置Content来显示一个信息
+        builder.setMessage("Your Destination is Arrived!pLease get off the train");
+        //    设置一个PositiveButton
+        builder.setPositiveButton("I got it", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                r.stop();
+            }
+        });
+        builder.show();
+    }
+
     //private
     class JourneyBroadcastReceiver extends BroadcastReceiver {
 
@@ -388,12 +456,15 @@ public class JourneyFragment extends Fragment {
             int stationId = intent.getIntExtra("stationId", -1);
             String stationName = intent.getStringExtra("stationName");
             String nextStation = intent.getStringExtra("nextStation");
-            if (currentCityId != stationId) {
-                refreshSections();
-                speaker.speak("Dear passengers,Here is " + stationName + "  Railway Station , the next one is " + nextStation, TextToSpeech.QUEUE_ADD, null);
+
+            if (currentCityId != stationId
+                    &&stationId!=stationslist.get(stationslist.size()-1).mId) {
+
+                speaker.speak("Dear passengers,Here is " + stationName + "  Railway Station , and the next Station is " + nextStation, TextToSpeech.QUEUE_ADD, null);
 
             }
-
+            refreshSections();
+            currentCityId = stationId;
         }
     }
 

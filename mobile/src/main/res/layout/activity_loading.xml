@@ -17,21 +17,21 @@
         android:layout_marginTop="30dp"
         android:src="@mipmap/ic_launcher" />
 
-    <!--<com.github.glomadrian.loadingballs.BallView-->
-        <!--android:id="@+id/view"-->
-        <!--android:layout_width="80dp"-->
-        <!--android:layout_height="80dp"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_gravity="center"-->
-        <!--lib:ball_colors="@array/colors"-->
-        <!--lib:balls="3"-->
-        <!--lib:enable_size_animation="true"-->
-        <!--lib:max_ball_size="11dp"-->
-        <!--lib:min_ball_size="5dp"-->
-        <!--lib:movement_cycle_time="2000"-->
-        <!--lib:path="triangle"-->
-        <!--lib:size_cycle_time="500" />-->
+    <com.github.glomadrian.loadingballs.BallView
+        android:id="@+id/view"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        lib:ball_colors="@array/colors"
+        lib:balls="3"
+        lib:enable_size_animation="true"
+        lib:max_ball_size="11dp"
+        lib:min_ball_size="5dp"
+        lib:movement_cycle_time="2000"
+        lib:path="triangle"
+        lib:size_cycle_time="500" />
 
     <TextView
         android:id="@+id/textView9"

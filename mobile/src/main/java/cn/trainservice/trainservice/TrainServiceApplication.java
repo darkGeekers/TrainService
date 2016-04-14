@@ -26,9 +26,10 @@ public class TrainServiceApplication extends Application {
 
     //some url
     private static String http = "http";
-    private static String serverIP = "192.168.1.235";
+    private static String serverIP = "192.168.23.1";
     private static String URLGetStationList = "/journey/stationList";
     private static String URLGetCurrentCityInfo = "/journey/currentCityInfo";
+    private static String URLGetCityInfo= "/journey/cityInfo";
     private static String URLLogin = "/user/login";
 
     //public static String URLGetCurrentCityInfo="/journey/currentCityInfo";
@@ -89,6 +90,10 @@ public class TrainServiceApplication extends Application {
 
     public static String getCurrentCityInfoUrl() {
         return http + "://" + serverIP + URLGetCurrentCityInfo;
+    }
+
+    public static String getCityInfoUrl(int cityId) {
+        return http + "://" + serverIP + URLGetCityInfo+"/"+cityId;
     }
 
     public static LiteHttp getLiteHttp(Context context) {

@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">TrainService</string>
-    <string name="hello_world">Hello World!</string>
+    <string name="currentCity">Current City:西安</string>
 </resources>

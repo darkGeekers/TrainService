@@ -10,7 +10,7 @@
         android:divider="@drawable/linear_divider"
         android:showDividers="middle"
         android:orientation="vertical"
-        android:padding="6dp"
+        android:padding="3dp"
         android:layout_gravity="center_vertical">
 
         <LinearLayout
@@ -19,11 +19,12 @@
             android:orientation="horizontal"
             android:padding="2dp">
 
-            <com.beardedhen.androidbootstrap.AwesomeTextView
+            <cn.trainservice.trainservice.view.IconTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:bootstrapBrand="success"
-                app:fontAwesomeIcon="fa_android" />
+               android:text="@string/icon_idcard"
+                android:layout_marginRight="3dp"
+                android:textColor="@color/ticket_ico" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -49,7 +50,7 @@
                     android:gravity="right"
                     android:textSize="6dp" />
                 <com.beardedhen.androidbootstrap.BootstrapLabel
-                    android:id="@+id/example_blabel_change_color"
+                    android:id="@+id/tv_seat_user_type"
                     style="@style/wrapping_button"
                     android:text="学生票"
                     app:bootstrapBrand="success"
@@ -67,11 +68,13 @@
             android:orientation="horizontal"
             android:padding="2dp">
 
-            <com.beardedhen.androidbootstrap.AwesomeTextView
+            <cn.trainservice.trainservice.view.IconTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:bootstrapBrand="success"
-                app:fontAwesomeIcon="fa_android" />
+                android:text="@string/icon_user"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginRight="3dp"
+                android:textColor="@color/ticket_ico" />
 
             <TextView
                 android:id="@+id/tv_ticket_ID"
@@ -88,11 +91,14 @@
             android:orientation="horizontal"
             android:padding="2dp">
 
-            <com.beardedhen.androidbootstrap.AwesomeTextView
+            <cn.trainservice.trainservice.view.IconTextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:bootstrapBrand="success"
-                app:fontAwesomeIcon="fa_android" />
+                android:layout_height="match_parent"
+                android:text="@string/icon_train"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginRight="3dp"
+                android:textColor="@color/ticket_ico" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -134,7 +140,7 @@
                         android:id="@+id/tv_stations_less"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="经26小时29分"
+                        android:text="26h29min"
                         android:textAlignment="center"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="#aaaa00" />
@@ -163,7 +169,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="次日17:00"
+                        android:text="Next Day17:00"
                         android:id="@+id/textView4" />
                 </LinearLayout>
 

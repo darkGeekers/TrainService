@@ -246,16 +246,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                             if(js.has("result")){
                                                 success=js.getBoolean("result");
                                                 int code = (success == false ? 0 : 1);
-                                                JSONObject jso=js.getJSONObject("info");
-                                                String user_ID=jso.getString("User_ID");
-                                                String  userName=jso.getString("User_Name");
-                                                String train_Name=jso.getString("Train_Name");
-                                                String startname=jso.getString("startname");
-                                                String endname=jso.getString("User_ID");
+                                                if(success){
+                                                    JSONObject jso=js.getJSONObject("info");
+                                                    String user_ID=jso.getString("User_ID");
+                                                    String  userName=jso.getString("User_Name");
+                                                    String train_Name=jso.getString("Train_Name");
+                                                    String startname=jso.getString("startname");
+                                                    String endname=jso.getString("endname");
 
-                                                TrainServiceApplication.setTickt(
-                                                        new TicketInfo(LoginActivity.this,train_Name,userName,user_ID,startname,endname));
+                                                    TrainServiceApplication.setTickt(
+                                                            new TicketInfo(LoginActivity.this,train_Name,userName,user_ID,startname,endname));
 
+
+                                                }
 
                                                 responseLoginResult(code);
                                                 Log.d("data", response.getResult());

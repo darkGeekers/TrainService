@@ -10,6 +10,9 @@
     <string name="icon_canting">&#xe606;</string>
     <string name="icon_game">&#xe607;</string>
     <string name="icon_shop">&#xe608;</string>
-
+    <string name="icon_train">&#xe609;</string>
+    <string name="icon_user">&#xe60a;</string>
+    <string name="icon_idcard">&#xe60b;</string>
+    <string name="icon_note">&#xe60c;</string>
 
 </resources>

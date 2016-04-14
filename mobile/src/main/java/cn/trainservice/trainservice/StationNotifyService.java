@@ -116,7 +116,7 @@ public class StationNotifyService extends Service {
                 }
                 Intent notifyIntent = new Intent();
                 notifyIntent.setAction(TrainServiceApplication.JourneyBroadcastAction);
-                notifyIntent.putExtra("stationId", 291);
+                notifyIntent.putExtra("stationId", currentStation_id);
 
 
 //            notifyIntent.putExtra("stationName","Xi'An Railway Station");
@@ -124,7 +124,7 @@ public class StationNotifyService extends Service {
 
                 notifyIntent.putExtra("stationName", currentStation);
                 notifyIntent.putExtra("nextStation", nextStation);
-                createNotify("Here is " + currentStation +" Railway Station, stop time "+stopTime, "Next：" + nextStation);
+                createNotify("Here is " + currentStation +" Railway Station", "Next：" + nextStation);
                 sendBroadcast(notifyIntent);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -207,7 +207,6 @@ public class StationNotifyService extends Service {
 
 
             recv();
-
 
 
             //send
