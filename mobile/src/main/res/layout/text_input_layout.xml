@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/appbar_padding_top">
+    <EditText
+        android:layout_alignParentBottom="true"
+        android:layout_weight="9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/input"
+        android:minHeight="40dp"
+        android:maxHeight="150dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/textinput_background"
+        />
+        <RelativeLayout
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="send"
+                android:id="@+id/send_button"
+                android:textColor="@color/chat_back"
+                android:background="@drawable/send_background"
+                android:layout_alignParentBottom="true"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+</LinearLayout>

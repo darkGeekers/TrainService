@@ -15,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.trainservice.trainservice.R;
+import cn.trainservice.trainservice.service.Chat.FriendAdapter;
 import cn.trainservice.trainservice.service.movie.dummy.DummyContent;
 
 /**
@@ -83,7 +85,8 @@ public class MovieListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        List <FriendAdapter.Friend> list = new ArrayList<>();
+        recyclerView.setAdapter(new FriendAdapter(this,list));
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -122,6 +125,7 @@ public class MovieListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
+
             return mValues.size();
         }
 

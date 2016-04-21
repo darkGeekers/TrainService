@@ -1,6 +1,7 @@
 package cn.trainservice.trainservice.journey.model;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,7 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
 
     private ArrayList<TrainStation> mValues;
     private Context mcontext;
-    private int currentStationId=4;
+    private int currentStationId=-1;
     public StationlistRecyclerViewAdapter(ArrayList<TrainStation> stations, Context context) {
         mValues = stations;
         mcontext=context;
@@ -43,6 +44,7 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
         holder.tv_arrivalTime.setText(mValues.get(position).mArrivalTime);
         holder.tv_time_stay.setText(mValues.get(position).mTimeStay+mcontext.getString(R.string.minute));
         if(currentStationId==mValues.get(position).mId){
+            holder.mView.setBackgroundColor(Color.LTGRAY);
             holder.tv_station_index.setTextColor(mcontext.getResources().getColor(R.color.colorPrimary));
             holder.tv_station_name.setTextColor(mcontext.getResources().getColor(R.color.colorPrimary));
             holder.tv_arrivalTime.setTextColor(mcontext.getResources().getColor(R.color.colorPrimary));
@@ -50,6 +52,7 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
             holder.tv_station_mark.setVisibility(View.VISIBLE);
             holder.tv_station_mark.setFontAwesomeIcon("fa_hand_o_right");
         }else{
+            holder.mView.setBackgroundColor(Color.WHITE);
             holder.tv_station_index.setTextColor(mcontext.getResources().getColor(R.color.stationItem));
             holder.tv_station_name.setTextColor(mcontext.getResources().getColor(R.color.stationItem));
             holder.tv_arrivalTime.setTextColor(mcontext.getResources().getColor(R.color.stationItem));
@@ -71,8 +74,8 @@ public class StationlistRecyclerViewAdapter extends RecyclerView.Adapter<Station
         notifyDataSetChanged();
     }
 
-    public void setMarkAtIndex(int index){
-        currentStationId=index;
+        public void setMarkAtCity(int cityId){
+        currentStationId=cityId;
         notifyDataSetChanged();
     }
 

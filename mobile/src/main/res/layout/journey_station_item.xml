@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingTop="2dp"
     android:paddingBottom="1dp">
     <FrameLayout
@@ -11,7 +11,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/tv_current_mark_container"
         android:layout_weight="7"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
         <com.beardedhen.androidbootstrap.AwesomeTextView
             android:id="@+id/tv_current_station_mark"
 
