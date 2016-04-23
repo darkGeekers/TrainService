@@ -147,8 +147,6 @@ public class StationNotifyService extends Service {
 
     }
 
-
-
     private ChatServer chatServer =  new ChatServer();
     private UdpBroadCast UdpBroadCast = new UdpBroadCast();
     private Thread listenUDPServer = new Thread(new Runnable() {
