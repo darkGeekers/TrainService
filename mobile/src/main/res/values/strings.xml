@@ -206,4 +206,5 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="tv_cityCurrentCity">Current City:</string>
     <string name="tv_notices">Dear passengers, you do not have to log in, you can get personalized service after login!</string>
+    <string name="title_activity_movie_detail">MovieDetailActivity</string>
 </resources>

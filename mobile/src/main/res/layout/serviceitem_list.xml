@@ -6,8 +6,7 @@
     android:name="cn.trainservice.trainservice.service.serviceItem.ServiceItemListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_below="@+id/tabs"
     app:layoutManager="LinearLayoutManager"
     tools:context="cn.trainservice.trainservice.service.serviceItem.ServiceItemListActivity"
-    tools:listitem="@layout/serviceitem_list_content" />
+    tools:listitem="@layout/movieitem_list_content" />

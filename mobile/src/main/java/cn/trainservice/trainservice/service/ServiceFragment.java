@@ -11,8 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import cn.trainservice.trainservice.R;
-import cn.trainservice.trainservice.service.movie.MovieListActivity;
-import cn.trainservice.trainservice.service.radio.RadioActivity;
+import cn.trainservice.trainservice.service.serviceItem.ServiceItemListActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,25 +78,27 @@ public class ServiceFragment extends Fragment {
         LinearLayout service_gameHall = (LinearLayout) view.findViewById(R.id.service_gameHall);
         LinearLayout service_more = (LinearLayout) view.findViewById(R.id.service_more);
 
-
-        bindServiceActivity(service_movies, MovieListActivity.class);
-        bindServiceActivity(service_diningHall, MovieListActivity.class);
-        bindServiceActivity(service_store, MovieListActivity.class);
-        bindServiceActivity(service_BookingBerth, MovieListActivity.class);
-        bindServiceActivity(service_liveVideo, MovieListActivity.class);
-        bindServiceActivity(service_radio, RadioActivity.class);
-        bindServiceActivity(service_gameHall, MovieListActivity.class);
-        bindServiceActivity(service_more, MovieListActivity.class);
+        Bundle movie=new Bundle();
+        bindService(service_movies, ServiceItemListActivity.class, "movie");
+//        bindService(service_diningHall, ServiceItemListActivity.class);
+//        bindService(service_store, ServiceItemListActivity.class);
+//        bindService(service_BookingBerth, ServiceItemListActivity.class);
+//        bindService(service_liveVideo, ServiceItemListActivity.class);
+//        bindService(service_radio, RadioActivity.class);
+//        bindService(service_gameHall, ServiceItemListActivity.class);
+//        bindService(service_more, ServiceItemListActivity.class);
 
         return view;
     }
 
 
-    public void bindServiceActivity(LinearLayout service, final Class c) {
-        service.setOnClickListener(new View.OnClickListener() {
+    public void bindService(LinearLayout layout, final Class activity,String serviceName) {
+        final Intent intent= new Intent(getContext(), activity);
+        intent.putExtra("serviceName",serviceName);
+        layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(), c));
+                startActivity(intent);
             }
         });
     }

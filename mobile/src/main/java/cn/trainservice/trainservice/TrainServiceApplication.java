@@ -31,7 +31,9 @@ public class TrainServiceApplication extends Application {
     private static String URLGetCurrentCityInfo = "/journey/currentCityInfo";
     private static String URLGetCityInfo= "/journey/cityInfo";
     private static String URLLogin = "/user/login";
-
+    private static String URLGetMovieList = "/service/movieList";
+    private static String URLGetMovieImagePath = "/services/image/";
+    private static String URLGetMoviePath = "/services/movie/";
     //public static String URLGetCurrentCityInfo="/journey/currentCityInfo";
 
     private static TicketInfo ticket;
@@ -90,6 +92,16 @@ public class TrainServiceApplication extends Application {
 
     public static String getCurrentCityInfoUrl() {
         return http + "://" + serverIP + URLGetCurrentCityInfo;
+    }
+    public static String getMovieImagePath(String relativePath) {
+        return http + "://" + serverIP + URLGetMovieImagePath+relativePath;
+    }
+    public static String getMoviePath(String relativePath) {
+        return http + "://" + serverIP + URLGetMoviePath+relativePath;
+    }
+
+    public static String getMovieListUrl() {
+        return http + "://" + serverIP + URLGetMovieList;
     }
 
     public static String getCityInfoUrl(int cityId) {

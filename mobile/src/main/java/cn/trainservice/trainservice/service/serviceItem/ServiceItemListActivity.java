@@ -20,6 +20,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import cn.trainservice.trainservice.R;
+import cn.trainservice.trainservice.service.model.ServiceFactory;
+import cn.trainservice.trainservice.service.model.SimpleServiceRecyclerViewAdapter;
+import cn.trainservice.trainservice.service.model.SingleSimpleService;
 import cn.trainservice.trainservice.service.serviceItem.dummy.DummyContent;
 
 /**
@@ -37,6 +40,7 @@ public class ServiceItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private SingleSimpleService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,25 +49,24 @@ public class ServiceItemListActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+        Intent intent=getIntent();
+        String serviceName=intent.getStringExtra("serviceName");
+        getSupportActionBar().setTitle(serviceName);
+         service= ServiceFactory.create(this,serviceName);
+        //String
+
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        View recyclerView = findViewById(R.id.serviceitem_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        RecyclerView recyclerView =(RecyclerView) findViewById(R.id.serviceitem_list);
+      //  assert recyclerView != null;
+        recyclerView.setAdapter(service.getViewAdapter());
+
 
         if (findViewById(R.id.serviceitem_detail_container) != null) {
             // The detail container view will be present only in the
@@ -85,82 +88,16 @@ public class ServiceItemListActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpFromSameTask(this);
+            //NavUtils.navigateUpFromSameTask(this);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+    private void setupRecyclerView(RecyclerView recyclerView) {
+        recyclerView.setAdapter(service.getViewAdapter());
     }
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
-
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-            mValues = items;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.serviceitem_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
-
-            holder.mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(ServiceItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        ServiceItemDetailFragment fragment = new ServiceItemDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.serviceitem_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ServiceItemDetailActivity.class);
-                        intent.putExtra(ServiceItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
-                        context.startActivity(intent);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
-
-            public ViewHolder(View view) {
-                super(view);
-                mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
-            }
-
-            @Override
-            public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
-            }
-        }
-    }
 }

@@ -28,8 +28,8 @@ public class VideoDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_detail);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -38,10 +38,14 @@ public class VideoDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             Vitamio.isInitialized(this);
             videoView = (VideoView) findViewById(R.id.videoView);
-            String uri = "http://192.168.1.100/Detective.Chinatown.2015.WEB-DL.x264-npuer.mkv";
+            Intent intent = getIntent();
+            final String title =intent.getStringExtra("title");
+            actionBar.setTitle(title);
+            final String sourceUrl =intent.getStringExtra("sourceUrl");
+            String uri = sourceUrl;
             videoView.setVideoPath(uri);
             mc = new MediaController(this);
-            mc.setFileName("");
+            mc.setFileName(title);
             videoView.setMediaController(mc);
 
             videoView.requestFocus();
@@ -69,6 +73,7 @@ public class VideoDetailActivity extends AppCompatActivity {
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
            // NavUtils.navigateUpTo(this, new Intent(this, MovieListActivity.class));
+           finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
