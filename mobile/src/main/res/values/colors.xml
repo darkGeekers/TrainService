@@ -23,7 +23,13 @@
     <color name="ball3">#3D8EFF</color>
     <color name="stationItem">#666</color>
     <color name="ticket_ico">#5462e1</color>
-
+    <color name="chat_back">#E2E2E2</color>
+    <color name="input_chat_back">#f9f9f9</color>
+    <color name="send_chat_back">#e43D8EFF</color>
+    <color name="chat_content_back">#d74b95fc</color>
+    <color name="user_iterm_back">#ececec</color>
+    <color name="stroke_shope">#d6d1d1</color>
+    <color name="header_back">#efeded</color>
     <integer-array name="colors">
         <item>@color/ball1</item>
         <item>@color/ball2</item>

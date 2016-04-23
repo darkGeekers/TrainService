@@ -21,10 +21,13 @@ import android.widget.TextView;
 import com.beardedhen.androidbootstrap.AwesomeTextView;
 
 import cn.trainservice.trainservice.journey.JourneyFragment;
+import cn.trainservice.trainservice.service.Chat.ChatFragment;
 import cn.trainservice.trainservice.service.ServiceFragment;
 
 public class MainActivity extends AppCompatActivity implements
-        JourneyFragment.OnFragmentInteractionListener, ServiceFragment.OnFragmentInteractionListener {
+        JourneyFragment.OnFragmentInteractionListener
+        , ServiceFragment.OnFragmentInteractionListener
+        , ChatFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -95,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
 
-        startService(new Intent(this,StationNotifyService.class));
+        startService(new Intent(this, StationNotifyService.class));
 
     }
 
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements
                 case 1:
                     return ServiceFragment.newInstance("", "");
                 case 2:
-                   // return JourneyFragment.newInstance("", "");
+                    return JourneyFragment.newInstance("", "");
             }
 
             // getItem is called to instantiate the fragment for the given page.

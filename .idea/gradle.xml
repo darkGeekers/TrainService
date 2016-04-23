@@ -16,16 +16,6 @@
             <option value="$PROJECT_DIR$/wear" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/Superplayer" />
-            <option value="$PROJECT_DIR$/cubeImage" />
-            <option value="$PROJECT_DIR$/mobile" />
-            <option value="$PROJECT_DIR$/vitamio" />
-            <option value="$PROJECT_DIR$/wear" />
-          </set>
-        </option>
       </GradleProjectSettings>
     </option>
   </component>

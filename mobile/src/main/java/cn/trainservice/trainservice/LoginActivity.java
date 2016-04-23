@@ -53,6 +53,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cn.trainservice.trainservice.journey.view.TicketInfo;
+import cn.trainservice.trainservice.service.Chat.User;
 import cn.trainservice.trainservice.view.CameraView;
 
 /**
@@ -170,57 +171,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 @Override
                 public void run() {
                     String uploadUrl = TrainServiceApplication.user_Login();
-//
-//                    HttpURLConnection connection = null;
-//                    DataOutputStream out = null;
-//                    try {
-//                        Log.d("data","posting");
-//                        URL url = new URL(uploadUrl);
-//                        connection = (HttpURLConnection) url.openConnection();
-//                        connection.setConnectTimeout(10 * 1000);
-//                        connection.setRequestMethod("POST");
-//                        connection.setUseCaches(false);
-//                        connection.setRequestProperty("Accept", "text/html,application/xhtml+xml," +
-//                                "application/xml;q=0.9,*/*;q=0.8");
-//                        connection.addRequestProperty("User-Agent", "Mozilla / 5.0 (Windows NT 6.3;" +
-//                                "WOW64)AppleWebKit / 537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 " +
-//                                "Safari/537.36 SE 2.X MetaSr 1.0");
-//                        connection.addRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-//                        connection.addRequestProperty("Accept-Language", "zh-CN");
-//                        connection.addRequestProperty("Charset", "UTF-8");
-//                        connection.addRequestProperty("Connection", "Keep-Alive");
-//                        connection.setDoInput(true);
-//                        connection.setDoOutput(true);
-//                        connection.connect();
-//                        out = new DataOutputStream(connection.getOutputStream());
-//                        String str = "user_id" + mIDCardNumberView.getText().toString() + "&check_num" + mTicketNumberView.getText().toString();
-//                        out.writeBytes(str);
-//                        out.close();
-//                        String response = "";
-//                        int responsenum = connection.getResponseCode();
-//                        if (responsenum == 200) {
-//                            DataInputStream input = new DataInputStream(connection.getInputStream());
-//                            String line = "";
-//                            while ((line = input.readLine()) != null) {
-//                                response = response + line;
-//                            }
-//                            Log.d("data", response);
-//                            input.close();
-//                        } else {
-//                            response = null;
-//                        }
-//                        System.out.print(response);
-//
-//                    } catch (MalformedURLException e) {
-//                        e.printStackTrace();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    } finally {
-//                        if (connection != null)
-//                            connection.disconnect();
-//                    }
-//
-//                }
                     final StringRequest postRequest = new StringRequest(uploadUrl)
                             .setMethod(HttpMethods.Post)
                             .setHttpListener(new HttpListener<String>(true, false, true) {
@@ -249,7 +199,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                                 if(success){
                                                     JSONObject jso=js.getJSONObject("info");
                                                     String user_ID=jso.getString("User_ID");
+                                                    User.user_id = user_ID;
                                                     String  userName=jso.getString("User_Name");
+                                                    User.user_name = userName;
                                                     String train_Name=jso.getString("Train_Name");
                                                     String startname=jso.getString("startname");
                                                     String endname=jso.getString("endname");

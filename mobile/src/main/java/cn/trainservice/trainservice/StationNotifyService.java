@@ -24,12 +24,15 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.trainservice.trainservice.service.Chat.ChatFragment;
+import cn.trainservice.trainservice.service.Chat.ChatServer;
+import cn.trainservice.trainservice.service.Chat.UdpBroadCast;
+
 public class StationNotifyService extends Service {
 
 
     private static final String BROADCAST_IP = "230.0.0.1";
-    private int mPort=8888;
-
+    private int mPort = 8888;
 
     public StationNotifyService() {
 
@@ -39,6 +42,8 @@ public class StationNotifyService extends Service {
     public void onCreate() {
         super.onCreate();
         listenUDPServer.start();
+        UdpBroadCast.start();
+        chatServer.startServer();
     }
 
     @Override
@@ -63,8 +68,8 @@ public class StationNotifyService extends Service {
         nm.notify(0, notification);
 
     }
-    public  void recv()
-    {
+
+    public void recv() {
         InetAddress inetRemoteAddr = null;
         try {
             inetRemoteAddr = InetAddress.getByName(BROADCAST_IP);
@@ -82,8 +87,7 @@ public class StationNotifyService extends Service {
             // TODO Auto-generated catch block
             e2.printStackTrace();
         }
-
-	        /*
+            /*
 	         * 如果是发送数据报包,可以不加入多播组; 如果是接收数据报包,必须加入多播组; 这里是接收数据报包,所以必须加入多播组;
 	         */
         try {
@@ -93,43 +97,48 @@ public class StationNotifyService extends Service {
             e1.printStackTrace();
         }
 
-        while (true)
-        {
+        while (true) {
             try {
                 server.receive(recvPack);
                 byte[] recvByte = Arrays.copyOfRange(recvPack.getData(), 0,
                         recvPack.getLength());
 
-//                        // 输出广播地址
-//                        Log.d("data1:", broadCast);
-                Log.i("data1:",new  String(recvByte) );
-                JSONObject  js = new JSONObject(new  String(recvByte));
-                String currentStation  = js.getString("到站");
-                String nextStation = js.getString("下站");
-                int currentStation_id = js.getInt("站点");
-                int stopTime = js.getInt("停车");
+                String str = new String(recvByte);
+                Log.d("data1",str);
+                if (str.contains("cmd:1")) {
+                    int start  = str.indexOf("--");
+                    int end = str.indexOf(",");
+                    String user_id = str.substring(start + 2, end);
+                    String user_name = str.substring(end + 1);
+                   String ip = recvPack.getAddress().getHostAddress();
+                    Log.d("data1","IP" +ip );
+                   ChatFragment.newInstance("","").addFriend(user_id, user_name ,ip);
+                } else {
+                    JSONObject js = new JSONObject(str);
+                    String currentStation = js.getString("到站");
+                    String nextStation = js.getString("下站");
+                    int currentStation_id = js.getInt("站点");
+                    int stopTime = js.getInt("停车");
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Intent notifyIntent = new Intent();
+                    notifyIntent.setAction(TrainServiceApplication.JourneyBroadcastAction);
+                    notifyIntent.putExtra("stationId", currentStation_id);
+
+                    notifyIntent.putExtra("stationName", currentStation);
+                    notifyIntent.putExtra("nextStation", nextStation);
+                    createNotify("Here is " + currentStation + " Railway Station", "Next：" + nextStation);
+                    sendBroadcast(notifyIntent);
                 }
-                Intent notifyIntent = new Intent();
-                notifyIntent.setAction(TrainServiceApplication.JourneyBroadcastAction);
-                notifyIntent.putExtra("stationId", currentStation_id);
 
-
-//            notifyIntent.putExtra("stationName","Xi'An Railway Station");
-//            notifyIntent.putExtra("nextStation","luo'yang Railway Station");
-
-                notifyIntent.putExtra("stationName", currentStation);
-                notifyIntent.putExtra("nextStation", nextStation);
-                createNotify("Here is " + currentStation +" Railway Station", "Next：" + nextStation);
-                sendBroadcast(notifyIntent);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }catch (Exception E){
+            } catch (Exception E) {
                 E.printStackTrace();
             }
 
@@ -138,78 +147,14 @@ public class StationNotifyService extends Service {
 
     }
 
- /*   public void recv() {
-//        try {
-//
-//
-//            InetAddress address = InetAddress.getLocalHost();
-//            System.out.println(address.getHostAddress());// 输出IP地址
-//            NetworkInterface netInterface = NetworkInterface.getByInetAddress(address);
-//            if (!netInterface.isLoopback() && netInterface.isUp()) {
-//                List<InterfaceAddress> interfaceAddresses = netInterface.getInterfaceAddresses();
-//                for (InterfaceAddress interfaceAddress : interfaceAddresses) {
-//
-//                    if (interfaceAddress.getBroadcast() != null) {
-//                        String broadCast = interfaceAddress.getBroadcast().getHostAddress();
-//                        // 输出广播地址
-//                        Log.d("data1:", broadCast);
-//                        InetAddress inetRemoteAddr = null;
-//                        inetRemoteAddr = InetAddress.getByName(broadCast);
-//                        DatagramPacket recvPack = new DatagramPacket(new byte[1024], 1024);
-//
-//                        MulticastSocket server = null;
-//                        server = new MulticastSocket(8888);
-//                        server.joinGroup(inetRemoteAddr);
-//                        while (true) {
-//                            server.receive(recvPack);
-//                            byte[] recvByte = Arrays.copyOfRange(recvPack.getData(), 0,
-//                                    recvPack.getLength());
-//                            Log.d("data1:", new String(recvByte));
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//        } catch (SocketException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//
-//        }
 
-        DatagramSocket socket;
-        DatagramPacket packet;
-        byte[] data = new byte[1024];
-        try {
-            socket = new DatagramSocket();
-            socket.setBroadcast(true); //有没有没啥不同
-            //send端指定接受端的端口，自己的端口是随机的
-            packet = new DatagramPacket(data, data.length, InetAddress.getByName("230.0.0.1"), mPort);
-       while (true){
-           socket.receive(packet);
-           Log.i("data1",packet.getData().toString());
-       }
 
-        }catch (SocketException e){
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }*/
-
+    private ChatServer chatServer =  new ChatServer();
+    private UdpBroadCast UdpBroadCast = new UdpBroadCast();
     private Thread listenUDPServer = new Thread(new Runnable() {
         @Override
         public void run() {
-
-
             recv();
-
-
-            //send
         }
     });
 
