@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements
                 case 1:
                     return ServiceFragment.newInstance("", "");
                 case 2:
-                    return JourneyFragment.newInstance("", "");
+                    return ChatFragment.newInstance("", "");
             }
 
             // getItem is called to instantiate the fragment for the given page.
