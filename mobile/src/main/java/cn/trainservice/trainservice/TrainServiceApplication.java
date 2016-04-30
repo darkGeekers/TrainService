@@ -23,6 +23,7 @@ public class TrainServiceApplication extends Application {
 
     public static boolean hasLogin = false;
     public static String JourneyBroadcastAction = "cn.trainservice.trainservice.JourneyBroadcastAction";
+    public static String ChatDiscoverBroadcastAction = "cn.trainservice.trainservice.ChatDiscoverBroadcastAction";
 
     //some url
     private static String http = "http";
@@ -37,6 +38,7 @@ public class TrainServiceApplication extends Application {
     //public static String URLGetCurrentCityInfo="/journey/currentCityInfo";
 
     private static TicketInfo ticket;
+    private static String URLGetFoodList= "/service/foodList";
 
     public static String[] getTabTitles(Context context) {
         String[] result = {
@@ -103,7 +105,9 @@ public class TrainServiceApplication extends Application {
     public static String getMovieListUrl() {
         return http + "://" + serverIP + URLGetMovieList;
     }
-
+    public static String getFoodListUrl() {
+            return http + "://" + serverIP + URLGetFoodList;
+    }
     public static String getCityInfoUrl(int cityId) {
         return http + "://" + serverIP + URLGetCityInfo+"/"+cityId;
     }
@@ -129,5 +133,6 @@ List<NameValuePair> headers=new ArrayList<NameValuePair>();
             return LiteHttp.newApacheHttpClient(config);
 
     }
+
 
 }

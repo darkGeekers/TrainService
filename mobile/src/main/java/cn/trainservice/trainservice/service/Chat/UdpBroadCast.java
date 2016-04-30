@@ -27,12 +27,12 @@ public class UdpBroadCast extends Thread {
                 String msg = "cmd:1--"+User.user_id+","+User.user_name;
                 Log.d("data1" ,"send" + msg);
                 if(User.user_id!=null){
-                    DatagramPacket packet = new DatagramPacket(msg.getBytes(), 0, msg.length(), inetRemoteAddr, PORT);
+                    DatagramPacket packet = new DatagramPacket(msg.getBytes("UTF-8"), 0, msg.getBytes("UTF-8").length, inetRemoteAddr, PORT);
                     //socket.setBroadcast(true);
                     socket.send(packet);
                 }
 
-                Thread.sleep(30 * 1000);
+                Thread.sleep(10 * 1000);
             }
         } catch (UnknownHostException un) {
             un.printStackTrace();

@@ -2,6 +2,8 @@ package cn.trainservice.trainservice.service.model;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,6 +41,7 @@ public abstract class SingleSimpleService {
     }
 
     public abstract SimpleServiceRecyclerViewAdapter getViewAdapter();
+    public abstract Drawable getThemeColor();
     public abstract void jumpToDetail();
 
 

@@ -1,13 +1,14 @@
 package cn.trainservice.trainservice.service.Chat;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.trainservice.trainservice.R;
-import cn.trainservice.trainservice.StationNotifyService;
+import cn.trainservice.trainservice.TrainServiceApplication;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,14 +41,15 @@ public class ChatFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private static RecyclerView viewPagger;
-    private static SwipeRefreshLayout swipeRefreshLayout;
-    private static List<FriendAdapter.Friend>   list = new ArrayList<>();
+    private  RecyclerView viewPagger;
+    private  SwipeRefreshLayout swipeRefreshLayout;
+    private  List<FriendAdapter.Friend>   list = new ArrayList<>();
 
-    public static Map<String ,FriendAdapter.Friend>  ip_list = new HashMap<>();
-    private static FriendAdapter friendAdapter ;
+    public  static Map<String ,FriendAdapter.Friend>  ip_list = new HashMap<>();
+    private  FriendAdapter friendAdapter ;
 
     private OnFragmentInteractionListener mListener;
+    private View view=null;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -78,36 +80,39 @@ public class ChatFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        registerReceiver();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_chat, container, false);
+            swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.chat_user_container);
+            viewPagger = (RecyclerView) view.findViewById(R.id.friend_list);
+            viewPagger.setItemAnimator(new DefaultItemAnimator());
+            friendAdapter = new FriendAdapter(this.getContext(), list);
+            setHasOptionsMenu(true);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
-        swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.chat_user_container);
-        viewPagger = (RecyclerView) view.findViewById(R.id.friend_list);
-        viewPagger.setItemAnimator(new DefaultItemAnimator());
-        friendAdapter = new FriendAdapter(this.getContext(),list);
+                @Override
+                public void onRefresh() {
+                    swipeRefreshLayout.post(new Runnable() {
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                        @Override
+                        public void run() {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
 
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.post(new Runnable() {
+                }
+            });
+//            addFriend("CHANXU", "CHENXU", "127.0.0.1");
+//            addFriend("CHANXUcc", "CHENXUccc", "127.0.0.1");
+            viewPagger.setAdapter(friendAdapter);
+        }
 
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-
-            }
-        });
-        addFriend("CHANXU","CHENXU","127.0.0.1");
-        addFriend("CHANXUcc","CHENXUccc","127.0.0.1");
-        viewPagger.setAdapter(friendAdapter);
         return view;
     }
     @Override
@@ -148,6 +153,8 @@ public class ChatFragment extends Fragment {
             FriendAdapter.Friend friend = new FriendAdapter.Friend(user_id ,user_name,ip,false);
             ip_list.put(user_id, friend);
             list.add(friend);
+
+            if(friendAdapter!=null)
             friendAdapter.loadList(list);
 
             Log.d("data1", "add");
@@ -169,5 +176,25 @@ public class ChatFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void registerReceiver() {
+        ChatBroadcastReceiver receiver = new ChatBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(TrainServiceApplication.ChatDiscoverBroadcastAction);
+        getActivity().registerReceiver(receiver, filter);
+    }
+
+
+    //private
+    class ChatBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String user_id = intent.getStringExtra("user_id");
+            String user_name = intent.getStringExtra("user_name");
+            String ip = intent.getStringExtra("ip");
+            addFriend(user_id,user_name,ip);
+        }
     }
 }

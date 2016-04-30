@@ -140,12 +140,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || isPasswordValid(password)) {
             mTicketNumberView.setError(getString(R.string.error_invalid_ticketNumber));
             focusView = mTicketNumberView;
             cancel = true;
         }
-
+//        if (TextUtils.isEmpty(password)) {
+//            mTicketNumberView.setError(getString(R.string.error_invalid_ticketNumber));
+//            focusView = mTicketNumberView;
+//            cancel = true;
+//        }
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mIDCardNumberView.setError(getString(R.string.error_field_required));

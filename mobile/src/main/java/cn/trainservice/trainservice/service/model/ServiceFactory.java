@@ -3,6 +3,8 @@ package cn.trainservice.trainservice.service.model;
 import android.content.Context;
 
 import cn.trainservice.trainservice.TrainServiceApplication;
+import cn.trainservice.trainservice.service.food.FoodService;
+import cn.trainservice.trainservice.service.movie.MovieService;
 
 /**
  * Created by BrainWang on 4/18/2016.
@@ -68,10 +70,8 @@ public class ServiceFactory {
         switch (serviceStr) {
             case "movie":
                 return new MovieService(context,"Movies", TrainServiceApplication.getMovieListUrl(),null);
-            //  break;
             case "food":
-             //   return new MovieService(context,service.getName(),service.getListUrl(),service.getTypes());
-            // break;
+                return new FoodService(context,"Foods", TrainServiceApplication.getFoodListUrl(),null);
         }
         return null;
     }

@@ -25,7 +25,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="5dp"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf ="@+id/left_image"
             android:id="@+id/left_content_container"
@@ -64,7 +64,7 @@
             android:src="@drawable/send"/>
         <LinearLayout
 
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="5dp"
             android:layout_toLeftOf="@+id/right_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

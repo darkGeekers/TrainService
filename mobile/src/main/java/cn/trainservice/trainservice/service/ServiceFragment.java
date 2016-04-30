@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import cn.trainservice.trainservice.R;
+import cn.trainservice.trainservice.service.live.LiveActivity;
+import cn.trainservice.trainservice.service.radio.RadioActivity;
 import cn.trainservice.trainservice.service.serviceItem.ServiceItemListActivity;
 
 /**
@@ -80,10 +82,11 @@ public class ServiceFragment extends Fragment {
 
         Bundle movie=new Bundle();
         bindService(service_movies, ServiceItemListActivity.class, "movie");
-//        bindService(service_diningHall, ServiceItemListActivity.class);
+        bindService(service_radio, RadioActivity.class, null);
+        bindService(service_diningHall, ServiceItemListActivity.class,"food");
 //        bindService(service_store, ServiceItemListActivity.class);
 //        bindService(service_BookingBerth, ServiceItemListActivity.class);
-//        bindService(service_liveVideo, ServiceItemListActivity.class);
+        bindService(service_liveVideo, LiveActivity.class,null);
 //        bindService(service_radio, RadioActivity.class);
 //        bindService(service_gameHall, ServiceItemListActivity.class);
 //        bindService(service_more, ServiceItemListActivity.class);
@@ -94,7 +97,9 @@ public class ServiceFragment extends Fragment {
 
     public void bindService(LinearLayout layout, final Class activity,String serviceName) {
         final Intent intent= new Intent(getContext(), activity);
-        intent.putExtra("serviceName",serviceName);
+        if(serviceName!=null){
+            intent.putExtra("serviceName",serviceName);
+        }
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

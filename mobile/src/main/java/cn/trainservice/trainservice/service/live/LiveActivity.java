@@ -1,9 +1,11 @@
-package cn.trainservice.trainservice;
+package cn.trainservice.trainservice.service.live;
 
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,18 +18,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import com.beardedhen.androidbootstrap.AwesomeTextView;
+import java.io.IOException;
+import java.net.SocketException;
 
-import cn.trainservice.trainservice.journey.JourneyFragment;
-import cn.trainservice.trainservice.service.Chat.ChatFragment;
-import cn.trainservice.trainservice.service.ServiceFragment;
+import cn.trainservice.trainservice.R;
 
-public class MainActivity extends AppCompatActivity implements
-        JourneyFragment.OnFragmentInteractionListener
-        , ServiceFragment.OnFragmentInteractionListener
-        , ChatFragment.OnFragmentInteractionListener {
+public class LiveActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -43,26 +41,14 @@ public class MainActivity extends AppCompatActivity implements
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private TabLayout tabLayout;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_live);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        toolbar.setNavigationIcon(R.drawable.ic_toolbar_logo);
-        toolbar.setNavigationContentDescription("未登录");
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TrainServiceApplication.attemptToEnterUserCenter(MainActivity.this);
-            }
-        });
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -70,61 +56,26 @@ public class MainActivity extends AppCompatActivity implements
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                toolbar.setTitle(TrainServiceApplication.getTabTitles(getBaseContext())[position] + "-" +
-                        getString(R.string.app_name));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
-        tabLayout.setTabTextColors(getResources().getColor(R.color.tabUnChecked), getResources().getColor(R.color.tabChecked));
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            TabLayout.Tab tab = tabLayout.getTabAt(i);
-            if (tab != null) {
-                tab.setCustomView(getTabView(i));
-            }
-        }
-
-
-        startService(new Intent(this, NotifyService.class));
-
     }
 
-    public View getTabView(int position) {
-
-        View v = LayoutInflater.from(getBaseContext()).inflate(R.layout.tab_item, null);
-
-
-        AwesomeTextView tab_ico_title = (AwesomeTextView) v.findViewById(R.id.tab_ico_title);
-        TextView tab_text_title = (TextView) v.findViewById(R.id.tab_text_title);
-
-        tab_text_title.setText(TrainServiceApplication.getTabTitles(getBaseContext())[position]);
-        tab_ico_title.setFontAwesomeIcon(TrainServiceApplication.getTabIcons(getBaseContext())[position]);
-        ColorStateList colors = tabLayout.getTabTextColors();
-        tab_ico_title.setTextColor(colors);
-        tab_text_title.setTextColor(colors);
-        return v;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_live, menu);
         return true;
     }
 
@@ -137,28 +88,23 @@ public class MainActivity extends AppCompatActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this,SettingsActivity.class));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements handleReceiveData {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
+        ImageView liveImageView;
         private static final String ARG_SECTION_NUMBER = "section_number";
-
+        UDPServer up;
         public PlaceholderFragment() {
         }
 
@@ -177,10 +123,52 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            View rootView = inflater.inflate(R.layout.fragment_live, container, false);
+            liveImageView = (ImageView) rootView.findViewById(R.id.liveImageView);
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        up = new UDPServer(8803+getArguments().getInt(ARG_SECTION_NUMBER));
+                        up.setReceiveCallback(PlaceholderFragment.this);
+                        up.start();
+                    } catch (SocketException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+
             return rootView;
+        }
+
+        @Override
+        public void onDestroyView(){
+            if(up!=null)
+            up.stop();
+            super.onDestroyView();
+        }
+
+
+        @Override
+        public void handleReceive(final byte[] data) {
+            if( getActivity()!=null){
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bit = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        Matrix m = new Matrix();
+                        m.postRotate(-90); //旋转-90度
+                        Bitmap newMap = Bitmap.createBitmap(bit, 0, 0, bit.getWidth(), bit.getHeight(), m, true);
+                        liveImageView.setImageBitmap(newMap);
+                    }
+                });
+            }
+
         }
     }
 
@@ -196,15 +184,6 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return JourneyFragment.newInstance("", "");
-                case 1:
-                    return ServiceFragment.newInstance("", "");
-                case 2:
-                    return ChatFragment.newInstance("", "");
-            }
-
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             return PlaceholderFragment.newInstance(position + 1);
@@ -213,18 +192,20 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return "Train Front";
                 case 1:
-                    return "SECTION 2";
+                    return "Train Rear";
                 case 2:
-                    return "SECTION 3";
+                    return "Left flank";
+                case 3:
+                    return "Right flank";
             }
             return null;
         }

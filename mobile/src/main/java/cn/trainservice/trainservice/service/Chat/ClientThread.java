@@ -1,5 +1,7 @@
 package cn.trainservice.trainservice.service.Chat;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,11 +22,10 @@ import java.net.UnknownHostException;
 public class ClientThread extends Thread {
     private String ip ;
     private static int PORT = 12345;
-    private String msg;
+    private MessageManager.MyMessage msg;
 
-    public ClientThread(String ip ,String msg) {
+    public ClientThread(String ip ,MessageManager.MyMessage msg) {
         this.ip = ip;
-
         this.msg = msg;
     }
     private String string_encode(){
@@ -33,7 +34,9 @@ public class ClientThread extends Thread {
         try{
             json = new JSONObject();
             json.put("user_id",User.user_id);
-            json.put("info",this.msg);
+            json.put("info",this.msg.info);
+            json.put("m_type",this.msg.m_type);
+            Log.d("data1","msg : "+json.toString());
             return json.toString();
         }catch (JSONException jn){
             jn.printStackTrace();

@@ -2,8 +2,6 @@ package cn.trainservice.trainservice.service.Chat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.trainservice.trainservice.R;
+import cn.trainservice.trainservice.view.IconTextView;
 
 public class ChattingActivity extends AppCompatActivity implements MessageManager.MessageArriverListener {
 
@@ -31,7 +30,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
     private static String ip;
     private Toolbar toolbar;
     private TextView chat_title;
-    private List<MyMessage> lists = new ArrayList<>();
+    private List<MessageManager.MyMessage> lists = new ArrayList<>();
     private LinearLayout content;
     private MessageManager mag = MessageManager.getMessageManager();
 
@@ -42,50 +41,62 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
         setContentView(R.layout.activity_chatting);
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
+
         Log.d("data1", "user_id" + user_id);
         chat_title = (TextView) findViewById(R.id.chat_title);
         chat_title.setText(intent.getStringExtra("name"));
         ip = intent.getStringExtra("ip");
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         content = (LinearLayout) findViewById(R.id.content);
         scrollView = (ScrollView) findViewById(R.id.chat_cont);
         send = (Button) findViewById(R.id.send_button);
+
+        IconTextView send_changeSeat=(IconTextView)findViewById(R.id.send_changeSeat);
+
         editText = (EditText) findViewById(R.id.input);
         initList();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = editText.getText().toString();
                 if (!text.equals("")) {
-                    new ClientThread(ip, text).start();
-                    editText.setText("");
+
                     if (ChatFragment.ip_list.containsKey(user_id))
                         ChatFragment.ip_list.get(user_id).last_msg = text;
-                    content.addView(new MesView(new MyMessage(1, text)).getMsgView());
+                    MessageManager msgManager = new MessageManager();
+                    Log.d("data1","text :"+text);
+                    MessageManager.MyMessage msg =new MessageManager.MyMessage(User.user_id, 1, text, 0);
+                    new ClientThread(ip, msg).start();
+                    editText.setText("");
+                    content.addView(new MesView(msg).getMsgView());
                     scrollView.fullScroll(ScrollView.FOCUS_DOWN);
 
                 }
             }
         });
-
+        send_changeSeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MessageManager.MyMessage msg = new MessageManager.MyMessage(User.user_id, 1, "", 1);
+                content.addView(new MesView(msg).getMsgView());
+            }
+        });
     }
 
     public void initList() {
-        List<String> list = mag.getUserMsg(user_id);
+        List<MessageManager.MyMessage> list = mag.getUserMsg(user_id);
         for (int i = 0, size = list.size(); i < size; i++) {
-            lists.add(new MyMessage(0, list.get(i)));
+            lists.add(list.get(i));
         }
 
-        lists.add(new MyMessage(0, "CHENXU"));
-        lists.add(new MyMessage(0, "CHENXU"));
-        lists.add(new MyMessage(1, "CHENXU"));
-        lists.add(new MyMessage(0, "CHENXU"));
-        lists.add(new MyMessage(0, "CHENXU"));
-        lists.add(new MyMessage(1, "CHENXU"));
-        lists.add(new MyMessage(0, "CHENXU"));
         for (int i = 0, len = lists.size(); i < len; i++) {
             content.addView(new MesView(lists.get(i)).getMsgView());
 
@@ -121,12 +132,11 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
 
 
     @Override
+    public boolean messageReach(MessageManager.MyMessage msg) {
 
-    public boolean messageReach(String user_id, String msg) {
-
-        if (user_id.equals(ChattingActivity.this.user_id)) {
+        if ((msg.user_id).equals(ChattingActivity.this.user_id)) {
             ChattingActivity.this.runOnUiThread(new upDateUi(msg));
-            ChatFragment.ip_list.get(user_id).last_msg = msg;
+            ChatFragment.ip_list.get(user_id).last_msg = msg.info;
             return true;
         } else {
             return false;
@@ -135,18 +145,19 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
 
 
     class upDateUi implements Runnable {
-        private String msg;
+        private MessageManager.MyMessage msg;
 
-        public upDateUi(String msg) {
+        public upDateUi(MessageManager.MyMessage msg) {
             this.msg = msg;
         }
 
         @Override
         public void run() {
-            ChattingActivity.this.content.addView(new MesView(new MyMessage(0, msg)).getMsgView());
+            ChattingActivity.this.content.addView(new MesView(msg).getMsgView());
             scrollView.fullScroll(ScrollView.FOCUS_DOWN);
         }
     }
+
 
     class MesView {
 
@@ -156,45 +167,46 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
         public cyimageview right_image;
         public RelativeLayout left_view;
         public RelativeLayout right_view;
-        private MyMessage msg;
+        private MessageManager.MyMessage msg;
 
-        public MesView(MyMessage msg) {
+        public MesView(MessageManager.MyMessage msg) {
             this.msg = msg;
 
 
         }
 
         public View getMsgView() {
-            View view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_content_view, null);
-            left_view = (RelativeLayout) view.findViewById(R.id.left_view);
-            right_view = (RelativeLayout) view.findViewById(R.id.right_view);
-            this.left_tv = (TextView) view.findViewById(R.id.left_content);
-            this.left_image = (cyimageview) view.findViewById(R.id.left_image);
-            this.right_tv = (TextView) view.findViewById(R.id.right_content);
-            this.right_image = (cyimageview) view.findViewById(R.id.right_image);
+            View view=null;
+            switch(msg.m_type){
+                case 0:
+                    view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_content_view, null);
+                    left_view = (RelativeLayout) view.findViewById(R.id.left_view);
+                    right_view = (RelativeLayout) view.findViewById(R.id.right_view);
+                    this.left_tv = (TextView) view.findViewById(R.id.left_content);
+                    this.left_image = (cyimageview) view.findViewById(R.id.left_image);
+                    this.right_tv = (TextView) view.findViewById(R.id.right_content);
+                    this.right_image = (cyimageview) view.findViewById(R.id.right_image);
 
-            if (msg.m_type == 0) {
-                left_tv.setText(msg.msg);
-                right_image.setVisibility(View.INVISIBLE);
-                right_tv.setVisibility(View.INVISIBLE);
-                right_view.setVisibility(View.INVISIBLE);
-            } else {
-                right_tv.setText(msg.msg);
-                left_image.setVisibility(View.INVISIBLE);
-                left_tv.setVisibility(View.INVISIBLE);
-                left_view.setVisibility(View.INVISIBLE);
+                    if (msg.m_from == 0) {
+                        left_tv.setText(msg.info);
+                        right_image.setVisibility(View.INVISIBLE);
+                        right_tv.setVisibility(View.INVISIBLE);
+                        right_view.setVisibility(View.INVISIBLE);
+                    } else {
+                        right_tv.setText(msg.info);
+                        left_image.setVisibility(View.INVISIBLE);
+                        left_tv.setVisibility(View.INVISIBLE);
+                        left_view.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+                case 1:
+                    view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_change_seat_view, null);
+                    break;
             }
+
             return view;
         }
     }
 
-    class MyMessage {
-        public int m_type;
-        public String msg;
 
-        MyMessage(int m_type, String msg) {
-            this.m_type = m_type;
-            this.msg = msg;
-        }
-    }
 }

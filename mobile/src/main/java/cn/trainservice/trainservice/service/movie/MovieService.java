@@ -1,7 +1,8 @@
-package cn.trainservice.trainservice.service.model;
+package cn.trainservice.trainservice.service.movie;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 
 import cn.trainservice.trainservice.R;
 import cn.trainservice.trainservice.TrainServiceApplication;
+import cn.trainservice.trainservice.service.model.SimpleServiceRecyclerViewAdapter;
+import cn.trainservice.trainservice.service.model.SingleSimpleService;
 import cn.trainservice.trainservice.service.movie.MovieDetailActivity;
 import in.srain.cube.image.CubeImageView;
 import in.srain.cube.image.ImageLoader;
@@ -36,6 +39,11 @@ public class MovieService extends SingleSimpleService {
     @Override
     public SimpleServiceRecyclerViewAdapter getViewAdapter() {
         return new movieListAdapter(context, this.mListUrl);
+    }
+
+    @Override
+    public Drawable getThemeColor() {
+        return context.getResources().getDrawable(R.color.service_movie_main);
     }
 
     @Override

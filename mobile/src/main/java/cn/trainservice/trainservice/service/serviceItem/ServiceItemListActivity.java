@@ -2,6 +2,9 @@ package cn.trainservice.trainservice.service.serviceItem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -46,14 +49,10 @@ public class ServiceItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_serviceitem_list);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         Intent intent=getIntent();
         String serviceName=intent.getStringExtra("serviceName");
-        getSupportActionBar().setTitle(serviceName);
          service= ServiceFactory.create(this,serviceName);
         //String
 
@@ -62,7 +61,8 @@ public class ServiceItemListActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
+        actionBar.setTitle(serviceName);
+        actionBar.setBackgroundDrawable(service.getThemeColor());
         RecyclerView recyclerView =(RecyclerView) findViewById(R.id.serviceitem_list);
       //  assert recyclerView != null;
         recyclerView.setAdapter(service.getViewAdapter());

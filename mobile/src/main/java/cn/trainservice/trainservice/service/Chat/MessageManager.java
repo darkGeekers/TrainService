@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MessageManager {
     public static List<FriendAdapter.Friend> lists;
-    private  Map<String, ConcurrentLinkedQueue<String>> message;
+    private  Map<String, ConcurrentLinkedQueue<MyMessage>> message;
     private  Map<String, String> userClient;
     private static MessageManager mag = null;
 
-    private MessageManager() {
+    public MessageManager() {
         message = new HashMap<>();
         userClient = new HashMap<>();
     }
@@ -43,7 +43,9 @@ public class MessageManager {
             JSONObject json = new JSONObject(msg);
             user_id = json.getString("user_id");
             String info = json.getString("info");
-            addMsg(user_id, info);
+            int m_type = json.getInt("m_type");
+            MyMessage message = new MyMessage(user_id,0,info ,m_type);
+                    addMsg(message);
 
         } catch (JSONException je) {
             je.printStackTrace();
@@ -51,26 +53,26 @@ public class MessageManager {
         }
     }
 
-    private void addMsg(String user_id, String msg) {
-       if(!messageArriverList.containsKey(user_id))
+    private void addMsg(MyMessage msg) {
+       if(!messageArriverList.containsKey(msg.user_id))
        { Log.d("data1","no listener");
-            if (message.get(user_id) == null) {
-                ConcurrentLinkedQueue<String> msgLists = new ConcurrentLinkedQueue<>();
+            if (message.get(msg.user_id) == null) {
+                ConcurrentLinkedQueue<MyMessage> msgLists = new ConcurrentLinkedQueue<>();
                 msgLists.add(msg);
-                message.put(user_id, msgLists);
+                message.put(msg.user_id, msgLists);
             } else {
-                message.get(user_id).add(msg);
+                message.get(msg.user_id).add(msg);
             }
         } else {
             Log.d("data1","listener");
-           if( messageArriverList.get(user_id).messageReach(user_id ,msg )){
+           if( messageArriverList.get(msg.user_id).messageReach(msg )){
                Log.d("data1","listener error");
-               if (message.get(user_id) == null) {
-                   ConcurrentLinkedQueue<String> msgLists = new ConcurrentLinkedQueue<>();
+               if (message.get((msg.user_id)) == null){
+                   ConcurrentLinkedQueue<MyMessage> msgLists = new ConcurrentLinkedQueue<>();
                    msgLists.add(msg);
-                   message.put(user_id, msgLists);
+                   message.put(msg.user_id, msgLists);
                } else {
-                   message.get(user_id).add(msg);
+                   message.get((msg.user_id)).add(msg);
                }
            }
 
@@ -78,10 +80,10 @@ public class MessageManager {
 
     }
 
-    public List<String> getUserMsg(String user_id) {
-        List<String> lists = new ArrayList<>();
-        ConcurrentLinkedQueue<String> queue = message.get(user_id);
-        String msg = null;
+    public List<MyMessage> getUserMsg(String user_id) {
+        List<MyMessage> lists = new ArrayList<>();
+        ConcurrentLinkedQueue<MyMessage> queue = message.get(user_id);
+        MyMessage msg = null;
         if(queue!=null){
             while((msg=queue.poll())!=null)
             {
@@ -92,8 +94,8 @@ public class MessageManager {
         return  lists;
     }
 
-    public String getMsg(String user_id) {
-        String msg = null;
+    public MyMessage getMsg(String user_id) {
+        MyMessage msg = null;
         if (message.get(user_id) == null) {
             msg = null;
         } else {
@@ -113,7 +115,7 @@ public class MessageManager {
 * */
     interface MessageArriverListener {///需要实现的监听
         boolean ListenserStatus = false;
-        boolean messageReach(String user_id ,String msg);
+        boolean messageReach(MyMessage msg);
     }
 
     private Map<String, MessageArriverListener> messageArriverList = new HashMap<>();
@@ -124,5 +126,21 @@ public class MessageManager {
 
     public void unregisterListener(String user_id) {
         messageArriverList.remove(user_id);
+    }
+
+
+    static class MyMessage {
+
+        public int m_from;
+        public int m_type;
+        public String info;
+        public String user_id;
+
+        public  MyMessage(String user_id, int m_from, String info, int m_type) {
+            this.user_id = user_id;
+            this.m_from = m_from;
+            this.info = info;
+            this.m_type = m_type;
+        }
     }
 }

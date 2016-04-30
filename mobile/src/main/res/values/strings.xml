@@ -125,7 +125,7 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <string name="student_ticket">Student Ticket</string>
+    <string name="student_ticket">Student</string>
     <string name="adult_ticket">Adult Ticket</string>
     <string name="SeatBerth">Berth</string>
     <string name="SeatHardSeat">Hard Seat</string>
@@ -208,4 +208,5 @@
     <string name="tv_notices">Dear passengers, you do not have to log in, you can get personalized service after login!</string>
     <string name="title_activity_movie_detail">MovieDetailActivity</string>
     <string name="title_activity_chatting">Chat</string>
+    <string name="title_activity_live">Live</string>
 </resources>

@@ -28,13 +28,13 @@ import cn.trainservice.trainservice.service.Chat.ChatFragment;
 import cn.trainservice.trainservice.service.Chat.ChatServer;
 import cn.trainservice.trainservice.service.Chat.UdpBroadCast;
 
-public class StationNotifyService extends Service {
+public class NotifyService extends Service {
 
 
     private static final String BROADCAST_IP = "230.0.0.1";
     private int mPort = 8888;
 
-    public StationNotifyService() {
+    public NotifyService() {
 
     }
 
@@ -100,19 +100,29 @@ public class StationNotifyService extends Service {
         while (true) {
             try {
                 server.receive(recvPack);
-                byte[] recvByte = Arrays.copyOfRange(recvPack.getData(), 0,
-                        recvPack.getLength());
 
-                String str = new String(recvByte);
+                String str = new String (recvPack.getData() , 0 ,recvPack.getLength(),"UTF-8");
+
                 Log.d("data1",str);
-                if (str.contains("cmd:1")) {
+                if (str.startsWith("cmd:1")) {
                     int start  = str.indexOf("--");
                     int end = str.indexOf(",");
                     String user_id = str.substring(start + 2, end);
                     String user_name = str.substring(end + 1);
                    String ip = recvPack.getAddress().getHostAddress();
                     Log.d("data1","IP" +ip );
-                   ChatFragment.newInstance("","").addFriend(user_id, user_name ,ip);
+
+                    Intent notifyIntent = new Intent();
+
+                    notifyIntent.setAction(TrainServiceApplication.ChatDiscoverBroadcastAction);
+                    notifyIntent.putExtra("user_id", user_id);
+
+                    notifyIntent.putExtra("user_name", user_name);
+                    notifyIntent.putExtra("ip", ip);
+                    //createNotify("Here is " + currentStation + " Railway Station", "Next：" + nextStation);
+                    sendBroadcast(notifyIntent);
+
+
                 } else {
                     JSONObject js = new JSONObject(str);
                     String currentStation = js.getString("到站");
