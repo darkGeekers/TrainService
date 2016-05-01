@@ -35,6 +35,7 @@ public class TrainServiceApplication extends Application {
     private static String URLGetMovieList = "/service/movieList";
     private static String URLGetMovieImagePath = "/services/image/";
     private static String URLGetMoviePath = "/services/movie/";
+    private static String ChangeSeat = "/user/change_seat";
     //public static String URLGetCurrentCityInfo="/journey/currentCityInfo";
 
     private static TicketInfo ticket;
@@ -50,6 +51,10 @@ public class TrainServiceApplication extends Application {
     }
     public static String user_Login(){
         return http + "://" + serverIP + URLLogin;
+    }
+
+    public static String changeSeat(){
+        return http + "://" + serverIP + ChangeSeat;
     }
     public static String[] getTabIcons(Context context) {
         String[] result = {

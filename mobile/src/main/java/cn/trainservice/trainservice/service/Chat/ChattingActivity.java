@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,26 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.litesuits.http.data.NameValuePair;
+import com.litesuits.http.listener.HttpListener;
+import com.litesuits.http.request.AbstractRequest;
+import com.litesuits.http.request.StringRequest;
+import com.litesuits.http.request.content.UrlEncodedFormBody;
+import com.litesuits.http.request.param.HttpMethods;
+import com.litesuits.http.response.Response;
+import com.litesuits.http.utils.HttpUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import cn.trainservice.trainservice.R;
+import cn.trainservice.trainservice.TrainServiceApplication;
+import cn.trainservice.trainservice.journey.view.TicketInfo;
 import cn.trainservice.trainservice.view.IconTextView;
 
 public class ChattingActivity extends AppCompatActivity implements MessageManager.MessageArriverListener {
@@ -30,7 +47,9 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
     private static String ip;
     private Toolbar toolbar;
     private TextView chat_title;
+
     private List<MessageManager.MyMessage> lists = new ArrayList<>();
+
     private LinearLayout content;
     private MessageManager mag = MessageManager.getMessageManager();
 
@@ -54,7 +73,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
         scrollView = (ScrollView) findViewById(R.id.chat_cont);
         send = (Button) findViewById(R.id.send_button);
 
-        IconTextView send_changeSeat=(IconTextView)findViewById(R.id.send_changeSeat);
+        IconTextView send_changeSeat = (IconTextView) findViewById(R.id.send_changeSeat);
 
         editText = (EditText) findViewById(R.id.input);
 
@@ -63,6 +82,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        loadLog();
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,9 +91,10 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
 
                     if (MessageManager.ip_list.containsKey(user_id))
                         MessageManager.ip_list.get(user_id).last_msg = text;
-                    MessageManager msgManager = new MessageManager();
-                    Log.d("data1","text :"+text);
-                    MessageManager.MyMessage msg =new MessageManager.MyMessage(User.user_id, 1, text, 0);
+
+                    Log.d("data1", "text :" + text);
+                    MessageManager.MyMessage msg = new MessageManager.MyMessage(User.user_id, 1, text, 0);
+                    mag.insertUserMsgLog(user_id, msg);
                     new ClientThread(ip, msg).start();
                     editText.setText("");
                     content.addView(new MesView(msg).getMsgView());
@@ -82,21 +103,37 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
                 }
             }
         });
+
         send_changeSeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MessageManager.MyMessage msg = new MessageManager.MyMessage(User.user_id, 1, "", 1);
+                new ClientThread(ip, msg).start();
+                mag.insertUserMsgLog(user_id, msg);
                 content.addView(new MesView(msg).getMsgView());
             }
         });
     }
 
-    public void initList() {
-        List<MessageManager.MyMessage> list = mag.getUserMsg(user_id);
+    public void loadLog() {
+        Log.d("data1", "log");
+        List<MessageManager.MyMessage> list = mag.getUserMsgLog(user_id);
         for (int i = 0, size = list.size(); i < size; i++) {
             content.addView(new MesView(list.get(i)).getMsgView());
+            Log.d("data1", "log");
         }
-     //   content.addView(new MesView(new MessageManager.MyMessage("0",0,"CHENXU" ,0)).getMsgView());
+        scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+    }
+
+    public void initList() {
+
+        List<MessageManager.MyMessage> list = mag.getUserMsg(user_id);
+        for (int i = 0, size = list.size(); i < size; i++) {
+            MessageManager.MyMessage msg = list.get(i);
+            mag.insertUserMsgLog(msg.user_id, msg);
+            content.addView(new MesView(msg).getMsgView());
+        }
+        //   content.addView(new MesView(new MessageManager.MyMessage("0",0,"CHENXU" ,0)).getMsgView());
         scrollView.fullScroll(ScrollView.FOCUS_DOWN);
 
     }
@@ -131,6 +168,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
     public boolean messageReach(MessageManager.MyMessage msg) {
 
         if ((msg.user_id).equals(ChattingActivity.this.user_id)) {
+            mag.insertUserMsgLog(user_id, msg);
             ChattingActivity.this.runOnUiThread(new upDateUi(msg));
             MessageManager.ip_list.get(user_id).last_msg = msg.info;
             return true;
@@ -154,6 +192,53 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
         }
     }
 
+    private void agreeChangeSeat() {
+        Log.d("data1", "user_id" + User.user_id + user_id);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String uploadUrl = TrainServiceApplication.changeSeat();
+                final StringRequest postRequest = new StringRequest(uploadUrl)
+                        .setMethod(HttpMethods.Post)
+                        .setHttpListener(new HttpListener<String>(true, false, true) {
+                            @Override
+                            public void onStart(AbstractRequest<String> request) {
+                                super.onStart(request);
+                            }
+
+                            @Override
+                            public void onUploading(AbstractRequest<String> request, long total, long len) {
+
+                            }
+
+                            @Override
+                            public void onEnd(Response<String> response) {
+                                if (response.isConnectSuccess()) {
+                                    String jsonstr = response.getResult();
+                                    try {
+                                        JSONObject js = new JSONObject(jsonstr);
+                                        if (js.has("result")) {
+
+                                            Log.d("data", "change" + response.getResult());
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    HttpUtil.showTips(ChattingActivity.this, "Upload Failure", response.getException() + "");
+                                }
+                            }
+                        });
+
+                LinkedList<NameValuePair> pList = new LinkedList<>();
+                pList.add(new NameValuePair("user_first", User.user_id));
+                pList.add(new NameValuePair("user_second", user_id));
+
+                postRequest.setHttpBody(new UrlEncodedFormBody(pList));
+                TrainServiceApplication.getLiteHttp(ChattingActivity.this).executeAsync(postRequest);
+            }
+        }).start();
+    }
 
     class MesView {
 
@@ -168,12 +253,11 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
         public MesView(MessageManager.MyMessage msg) {
             this.msg = msg;
 
-
         }
 
         public View getMsgView() {
-            View view=null;
-            switch(msg.m_type){
+            View view = null;
+            switch (msg.m_type) {
                 case 0:
                     view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_content_view, null);
                     left_view = (RelativeLayout) view.findViewById(R.id.left_view);
@@ -182,7 +266,6 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
                     this.left_image = (cyimageview) view.findViewById(R.id.left_image);
                     this.right_tv = (TextView) view.findViewById(R.id.right_content);
                     this.right_image = (cyimageview) view.findViewById(R.id.right_image);
-
                     if (msg.m_from == 0) {
                         left_tv.setText(msg.info);
                         right_image.setVisibility(View.INVISIBLE);
@@ -196,13 +279,54 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
                     }
                     break;
                 case 1:
-                    view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_change_seat_view, null);
+                    if (msg.m_from == 0) {
+                        view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_change_seat_view, null);
+                        BootstrapButton agree = (BootstrapButton) view.findViewById(R.id.agree);
+                        BootstrapButton disagree = (BootstrapButton) view.findViewById(R.id.disagree);
+                        agree.setOnClickListener(new ExchangeButtonListener());
+                        disagree.setOnClickListener(new ExchangeButtonListener());
+                    } else
+                        view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.chat_change_requirment_view, null);
+
+                    break;
+                case 2:
+                    if (msg.info.equals("agree")) {
+                        view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.change_seat_agree, null);
+                    } else if (msg.info.equals("disagree")) {
+                        view = LayoutInflater.from(ChattingActivity.this).inflate(R.layout.change_seat_disagree, null);
+                    }
                     break;
             }
-
             return view;
         }
     }
 
+    class ExchangeButtonListener implements View.OnClickListener {
 
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.agree: {
+                    MessageManager.MyMessage msg = new MessageManager.MyMessage(User.user_id, 1, "agree", 2);
+                    new ClientThread(ip, msg).start();
+                    mag.insertUserMsgLog(user_id, msg);
+                    content.addView(new MesView(msg).getMsgView());
+                    agreeChangeSeat();
+                }
+
+                break;
+                case R.id.disagree: {
+                    MessageManager.MyMessage msg = new MessageManager.MyMessage(User.user_id, 1, "disagree", 2);
+                    new ClientThread(ip, msg).start();
+                    mag.insertUserMsgLog(user_id, msg);
+                    content.addView(new MesView(msg).getMsgView());
+                }
+
+                break;
+                default:
+                    break;
+            }
+
+        }
+    }
 }
