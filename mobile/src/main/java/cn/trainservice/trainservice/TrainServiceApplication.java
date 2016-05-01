@@ -27,7 +27,7 @@ public class TrainServiceApplication extends Application {
 
     //some url
     private static String http = "http";
-    private static String serverIP = "192.168.23.1";
+    private static String serverIP = "192.168.199.235";
     private static String URLGetStationList = "/journey/stationList";
     private static String URLGetCurrentCityInfo = "/journey/currentCityInfo";
     private static String URLGetCityInfo= "/journey/cityInfo";

@@ -26,6 +26,8 @@ import java.util.List;
 
 import cn.trainservice.trainservice.service.Chat.ChatFragment;
 import cn.trainservice.trainservice.service.Chat.ChatServer;
+import cn.trainservice.trainservice.service.Chat.FriendAdapter;
+import cn.trainservice.trainservice.service.Chat.MessageManager;
 import cn.trainservice.trainservice.service.Chat.UdpBroadCast;
 
 public class NotifyService extends Service {
@@ -119,6 +121,7 @@ public class NotifyService extends Service {
 
                     notifyIntent.putExtra("user_name", user_name);
                     notifyIntent.putExtra("ip", ip);
+                    MessageManager.addFriend(new FriendAdapter.Friend(user_id,user_name,ip,false));
                     //createNotify("Here is " + currentStation + " Railway Station", "Next：" + nextStation);
                     sendBroadcast(notifyIntent);
 

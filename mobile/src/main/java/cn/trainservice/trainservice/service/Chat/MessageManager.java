@@ -16,7 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class MessageManager {
-    public static List<FriendAdapter.Friend> lists;
+    public static List<FriendAdapter.Friend> lists = new ArrayList<>();
+    public static Map<String ,FriendAdapter.Friend>  ip_list = new HashMap<>();
     private  Map<String, ConcurrentLinkedQueue<MyMessage>> message;
     private  Map<String, String> userClient;
     private static MessageManager mag = null;
@@ -37,6 +38,13 @@ public class MessageManager {
         return userClient.get(user_id);
     }
 
+    public static  void addFriend(FriendAdapter.Friend friend){
+        if(!ip_list.containsKey(friend.user_id)){
+            ip_list.put(friend.user_id, friend);
+            lists.add(friend);
+            Log.d("data1", "add");
+        }
+    }
     public void addMsg(String msg) {
         String user_id = null;
         try {

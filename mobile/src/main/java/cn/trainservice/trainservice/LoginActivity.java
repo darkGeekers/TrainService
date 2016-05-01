@@ -140,7 +140,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) || isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            Log.d("data1",password);
             mTicketNumberView.setError(getString(R.string.error_invalid_ticketNumber));
             focusView = mTicketNumberView;
             cancel = true;
@@ -280,6 +281,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
+
+        Log.d("data1","length:"+password.length());
         return password.length() == 5;
     }
 

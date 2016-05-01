@@ -57,7 +57,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
         IconTextView send_changeSeat=(IconTextView)findViewById(R.id.send_changeSeat);
 
         editText = (EditText) findViewById(R.id.input);
-        initList();
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
@@ -69,8 +69,8 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
                 String text = editText.getText().toString();
                 if (!text.equals("")) {
 
-                    if (ChatFragment.ip_list.containsKey(user_id))
-                        ChatFragment.ip_list.get(user_id).last_msg = text;
+                    if (MessageManager.ip_list.containsKey(user_id))
+                        MessageManager.ip_list.get(user_id).last_msg = text;
                     MessageManager msgManager = new MessageManager();
                     Log.d("data1","text :"+text);
                     MessageManager.MyMessage msg =new MessageManager.MyMessage(User.user_id, 1, text, 0);
@@ -94,20 +94,16 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
     public void initList() {
         List<MessageManager.MyMessage> list = mag.getUserMsg(user_id);
         for (int i = 0, size = list.size(); i < size; i++) {
-            lists.add(list.get(i));
-        }
-
-        for (int i = 0, len = lists.size(); i < len; i++) {
             content.addView(new MesView(lists.get(i)).getMsgView());
-
         }
+     //   content.addView(new MesView(new MessageManager.MyMessage("0",0,"CHENXU" ,0)).getMsgView());
         scrollView.fullScroll(ScrollView.FOCUS_DOWN);
 
     }
 
     @Override
     public void onResume() {
-
+        initList();
         mag.registerListener(user_id, this);
         super.onResume();
     }
@@ -136,7 +132,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
 
         if ((msg.user_id).equals(ChattingActivity.this.user_id)) {
             ChattingActivity.this.runOnUiThread(new upDateUi(msg));
-            ChatFragment.ip_list.get(user_id).last_msg = msg.info;
+            MessageManager.ip_list.get(user_id).last_msg = msg.info;
             return true;
         } else {
             return false;

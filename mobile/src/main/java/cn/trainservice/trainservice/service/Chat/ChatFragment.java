@@ -41,15 +41,15 @@ public class ChatFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private  RecyclerView viewPagger;
-    private  SwipeRefreshLayout swipeRefreshLayout;
-    private  List<FriendAdapter.Friend>   list = new ArrayList<>();
+    private RecyclerView viewPagger;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private List<FriendAdapter.Friend> list = new ArrayList<>();
 
-    public  static Map<String ,FriendAdapter.Friend>  ip_list = new HashMap<>();
-    private  FriendAdapter friendAdapter ;
+
+    private FriendAdapter friendAdapter;
 
     private OnFragmentInteractionListener mListener;
-    private View view=null;
+    private View view = null;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -92,6 +92,7 @@ public class ChatFragment extends Fragment {
             swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.chat_user_container);
             viewPagger = (RecyclerView) view.findViewById(R.id.friend_list);
             viewPagger.setItemAnimator(new DefaultItemAnimator());
+            list = MessageManager.lists;
             friendAdapter = new FriendAdapter(this.getContext(), list);
             setHasOptionsMenu(true);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -108,18 +109,19 @@ public class ChatFragment extends Fragment {
 
                 }
             });
-//            addFriend("CHANXU", "CHENXU", "127.0.0.1");
-//            addFriend("CHANXUcc", "CHENXUccc", "127.0.0.1");
+
             viewPagger.setAdapter(friendAdapter);
         }
 
         return view;
     }
+
     @Override
- public void   onResume(){
-        friendAdapter.notifyDataSetChanged();
+    public void onResume() {
+        addFriend();
         super.onResume();
     }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -144,23 +146,11 @@ public class ChatFragment extends Fragment {
         mListener = null;
     }
 
-
-
-    public void addFriend(String user_id ,String user_name ,String ip) {
-
-        Log.d("data1", "add Friend");
-        if(!ip_list.containsKey(user_id)){
-            FriendAdapter.Friend friend = new FriendAdapter.Friend(user_id ,user_name,ip,false);
-            ip_list.put(user_id, friend);
-            list.add(friend);
-
-            if(friendAdapter!=null)
-            friendAdapter.loadList(list);
-
-            Log.d("data1", "add");
+    public void addFriend() {
+        if (friendAdapter != null) {
+            friendAdapter.loadList(MessageManager.lists);
+            friendAdapter.notifyDataSetChanged();
         }
-        friendAdapter.notifyDataSetChanged();
-
     }
 
     /**
@@ -191,10 +181,7 @@ public class ChatFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            String user_id = intent.getStringExtra("user_id");
-            String user_name = intent.getStringExtra("user_name");
-            String ip = intent.getStringExtra("ip");
-            addFriend(user_id,user_name,ip);
+            addFriend();
         }
     }
 }
