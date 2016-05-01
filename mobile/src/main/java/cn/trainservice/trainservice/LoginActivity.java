@@ -112,12 +112,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-         surfaceView=(CameraView)findViewById(R.id.surfaceView);
+        surfaceView = (CameraView) findViewById(R.id.surfaceView);
         surfaceView.bindActivity(this);
         surfaceView.startCamera();
     }
-
-
 
 
     /**
@@ -141,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
-            Log.d("data1",password);
+            Log.d("data1", password);
             mTicketNumberView.setError(getString(R.string.error_invalid_ticketNumber));
             focusView = mTicketNumberView;
             cancel = true;
@@ -169,7 +167,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-       Log.d("data","post");
+            Log.d("data", "post");
             mProgressView.requestFocus();
 
             new Thread(new Runnable() {
@@ -184,35 +182,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     super.onStart(request);
                                     showProgress(true);
                                 }
-
                                 @Override
                                 public void onUploading(AbstractRequest<String> request, long total, long len) {
                                     showProgress(true);
                                 }
-
                                 @Override
                                 public void onEnd(Response<String> response) {
                                     showProgress(false);
                                     if (response.isConnectSuccess()) {
                                         boolean success = false;
-                                        String jsonstr=response.getResult();
-                                        try{
-                                            JSONObject js= new JSONObject(jsonstr);
-                                            if(js.has("result")){
-                                                success=js.getBoolean("result");
+                                        String jsonstr = response.getResult();
+                                        try {
+                                            JSONObject js = new JSONObject(jsonstr);
+                                            if (js.has("result")) {
+                                                success = js.getBoolean("result");
                                                 int code = (success == false ? 0 : 1);
-                                                if(success){
-                                                    JSONObject jso=js.getJSONObject("info");
-                                                    String user_ID=jso.getString("User_ID");
+                                                if (success) {
+                                                    JSONObject jso = js.getJSONObject("info");
+                                                    String user_ID = jso.getString("User_ID");
                                                     User.user_id = user_ID;
-                                                    String  userName=jso.getString("User_Name");
+                                                    String userName = jso.getString("User_Name");
                                                     User.user_name = userName;
-                                                    String train_Name=jso.getString("Train_Name");
-                                                    String startname=jso.getString("startname");
-                                                    String endname=jso.getString("endname");
+                                                    String train_Name = jso.getString("Train_Name");
+                                                    String startname = jso.getString("startname");
+                                                    String endname = jso.getString("endname");
 
                                                     TrainServiceApplication.setTickt(
-                                                            new TicketInfo(LoginActivity.this,train_Name,userName,user_ID,startname,endname));
+                                                            new TicketInfo(LoginActivity.this, train_Name, userName, user_ID, startname, endname));
 
 
                                                 }
@@ -222,20 +218,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                                             }
 
-
-
-
-                                        }catch (JSONException e){
-
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
                                         }
-                                        } else {
+                                    } else {
                                         HttpUtil.showTips(LoginActivity.this, "Upload Failure", response.getException() + "");
                                     }
 
                                 }
                             });
                     LinkedList<NameValuePair> pList = new LinkedList<>();
-                    pList.add(new NameValuePair("user_id",mIDCardNumberView.getText().toString() ));
+                    pList.add(new NameValuePair("user_id", mIDCardNumberView.getText().toString()));
                     pList.add(new NameValuePair("check_num", mTicketNumberView.getText().toString()));
                     postRequest.setHttpBody(new UrlEncodedFormBody(pList));
                     TrainServiceApplication.getLiteHttp(LoginActivity.this).executeAsync(postRequest);
@@ -245,6 +238,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         }
     }
+
     public void responseLoginResult(final int code) {
 
         runOnUiThread(new Runnable() {
@@ -260,7 +254,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         //
                         TrainServiceApplication.hasLogin = true;
                         finish();
-                        startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         showProgress(false);
                         break;
                     case 2:
@@ -282,7 +276,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
 
-        Log.d("data1","length:"+password.length());
+        Log.d("data1", "length:" + password.length());
         return password.length() == 5;
     }
 

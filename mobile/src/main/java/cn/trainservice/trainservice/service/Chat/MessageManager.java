@@ -73,9 +73,9 @@ public class MessageManager {
             }
         } else {
             Log.d("data1","listener");
-           if( messageArriverList.get(msg.user_id).messageReach(msg )){
+           if(!messageArriverList.get(msg.user_id).messageReach(msg )){
                Log.d("data1","listener error");
-               if (message.get((msg.user_id)) == null){
+               if (!message.containsKey(msg.user_id)){
                    ConcurrentLinkedQueue<MyMessage> msgLists = new ConcurrentLinkedQueue<>();
                    msgLists.add(msg);
                    message.put(msg.user_id, msgLists);

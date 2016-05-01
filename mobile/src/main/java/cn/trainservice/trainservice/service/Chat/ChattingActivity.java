@@ -94,7 +94,7 @@ public class ChattingActivity extends AppCompatActivity implements MessageManage
     public void initList() {
         List<MessageManager.MyMessage> list = mag.getUserMsg(user_id);
         for (int i = 0, size = list.size(); i < size; i++) {
-            content.addView(new MesView(lists.get(i)).getMsgView());
+            content.addView(new MesView(list.get(i)).getMsgView());
         }
      //   content.addView(new MesView(new MessageManager.MyMessage("0",0,"CHENXU" ,0)).getMsgView());
         scrollView.fullScroll(ScrollView.FOCUS_DOWN);

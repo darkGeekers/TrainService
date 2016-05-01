@@ -11,7 +11,7 @@
     <string name="action_sign_in">验证并登录</string>
     <string name="action_sign_in_short">登录</string>
     <string name="error_field_required">必填字段</string>
-    <string name="error_incorrect_ticketNumber">车票号错误</string>
+    <string name="error_incorrect_ticketNumber">身份证号或车票号错误</string>
     <string name="title_activity_login">验证身份并登录</string>
     <string name="error_invalid_id">身份证号无效</string>
     <string name="error_invalid_ticketNumber">车票号太短</string>
